@@ -8,7 +8,6 @@ RUN mvn -DskipTests=true clean package
 FROM eclipse-temurin:17-jre-alpine
 EXPOSE 8100
 
-RUN mkdir /app && chown -R nobody:nogroup /app
-USER nobody
+RUN mkdir /app
 COPY --from=build /home/maven/src/target/*.jar /app/app.jar
 ENTRYPOINT ["java", "-XX:+UnlockExperimentalVMOptions", "-XX:+UseContainerSupport", "-XX:MaxRAMPercentage=75.0", "-Djava.security.egd=file:/dev/./urandom", "-jar", "/app/app.jar"]
