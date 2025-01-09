@@ -9,10 +9,10 @@ ARG DEPENDENCY=/workspace/app/target/dependency
 COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
-#ENTRYPOINT ["java", "-cp", "app:app/lib/*", "cohort46.gracebakeryapi.GraceBackeryAPI"]
 
 # Открытие порта, если ваше приложение работает на нем
 EXPOSE 8100
+ENTRYPOINT ["java", "-cp", "app:app/lib/*", "cohort46.gracebakeryapi.GraceBackeryAPI"]
 
 # Указываем команду для запуска контейнера по умолчанию (необходимо для Docker)
 #CMD ["java", "-cp", "app:app/lib/*", "cohort46.gracebakeryapi.GraceBackeryAPI"]
