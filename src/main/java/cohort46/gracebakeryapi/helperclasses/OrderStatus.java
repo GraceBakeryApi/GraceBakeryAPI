@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Embeddable
 public class OrderStatus {
-    private OrdersStatusEnum orderStatus;
+    private OrdersStatusEnum Status;
     private String statusRu;
     private String statusDe;
 }

@@ -46,8 +46,6 @@ public class Order {
     private Double final_sum;
 
     private String comment;
-
-
 }
 
 //{order_id*, user_id, [orderitem_id, ...], total, date*,  delievery, orderstatus_id, final_sum}

@@ -4,6 +4,7 @@ import cohort46.gracebakeryapi.bakery.address.dto.AddressDto;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
 import cohort46.gracebakeryapi.bakery.orderitem.dto.OrderitemDto;
 import cohort46.gracebakeryapi.helperclasses.OrderStatus;
+import cohort46.gracebakeryapi.helperclasses.OrdersStatusEnum;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
@@ -24,7 +25,8 @@ public class OrderDto {
     private Double total;
     private String date;
     private AddressDto address;
-    private OrderStatus orderstatus;
+    @Setter
+    private OrdersStatusEnum orderstatus;
     private Double finalSum;
     private String comment;
 }

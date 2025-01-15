@@ -5,6 +5,7 @@ import cohort46.gracebakeryapi.bakery.category.model.Category;
 import cohort46.gracebakeryapi.bakery.filter.model.Filter;
 import cohort46.gracebakeryapi.bakery.image.model.Image;
 import cohort46.gracebakeryapi.bakery.ingredient.model.Ingredient;
+import cohort46.gracebakeryapi.bakery.orderitem.model.Orderitem;
 import cohort46.gracebakeryapi.bakery.productsize.model.Productsize;
 import jakarta.persistence.*;
 import lombok.*;
@@ -52,6 +53,9 @@ public class Product {
 
     @Column(nullable = false)
     private Boolean isActive;
+//-------------------------------------------------------------------
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    private Set<Orderitem> orderitems = new HashSet<>();
 }
 
 /*

@@ -18,14 +18,18 @@ import cohort46.gracebakeryapi.bakery.orderitem.dto.OrderitemDto;
 import cohort46.gracebakeryapi.bakery.product.dao.ProductRepository;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.exception.FailedDependencyException;
+import cohort46.gracebakeryapi.exception.NotAcceptableException;
 import cohort46.gracebakeryapi.exception.OrderNotFoundException;
 import cohort46.gracebakeryapi.exception.UserNotFoundException;
+import cohort46.gracebakeryapi.helperclasses.OrdersStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +53,11 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto addOrder(OrderDto orderDto) {
         if(  (orderDto.getUserId() == null) || (checkSource(orderDto)) ) { throw new FailedDependencyException("Creation failed"); };
         User user = userRepository.findById(orderDto.getUserId()).orElseThrow(() -> new UserNotFoundException(orderDto.getUserId()));
-        //user.getOrders().stream().sorted()//если есть корзина то вернуть ее
+        Optional<Order> temp = user.getOrders().stream().filter(order ->
+                order.getOrderstatus().getStatus().equals(OrdersStatusEnum.Cart)).findFirst();//если у user уже есть корзина, то вернуть ее
+        if(temp.isPresent()) { return modelMapper.map(temp.get(), OrderDto.class) ; }
+        else {orderDto.setOrderstatus(OrdersStatusEnum.Cart);};//если у user нет корзины, то назначить создаваемому order статус корзины
+
         Order order = modelMapper.map(orderDto, Order.class);
         order.setId(null);
         orderRepository.save(order);
@@ -81,7 +89,7 @@ public class OrderServiceImpl implements OrderService {
         modelMapper.addMappings(new PropertyMap<OrderDto, Order>() {
             @Override
             protected void configure() {
-                skip(destination.getUser());  // Игнорируем поле Order
+                skip(destination.getUser());  // Игнорируем поле User
             }
         });
         if(checkSource(orderDto)) { throw new FailedDependencyException("Creation failed"); };/////////////////// надо сделать check без проверки user
@@ -92,8 +100,13 @@ public class OrderServiceImpl implements OrderService {
     public Order deleteOrder(Long id) {
         Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException(id));
         //проверить статус order, удалять можно только заказ до состояния "в работе"
-        orderRepository.delete(order);
-        return order;
+        if(  (order.getOrderstatus().getStatus().equals(OrdersStatusEnum.Cart)) ||
+                (order.getOrderstatus().getStatus().equals(OrdersStatusEnum.Created)) )
+        {
+            orderRepository.delete(order);
+            return order;
+        }
+        else {throw new NotAcceptableException("Deletion is not available at this stage");}
     }
 
     @Transactional

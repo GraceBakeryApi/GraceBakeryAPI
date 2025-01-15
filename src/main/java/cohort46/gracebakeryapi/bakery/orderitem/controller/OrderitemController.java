@@ -32,6 +32,11 @@ public class OrderitemController {
         return orderitemService.patchOrderitemCost(id, cost);
     }
 
+    @PatchMapping("/orderitem/{id}/comment/{comment}")
+    OrderitemDto patchOrderitemComment(@PathVariable Long id, @PathVariable String comment){
+        return orderitemService.patchOrderitemComment(id, comment);
+    };
+
     @DeleteMapping("/orderitem")
     public OrderitemDto deleteOrderitem(@PathVariable Long id) {
         return orderitemService.deleteOrderitem(id)  ;

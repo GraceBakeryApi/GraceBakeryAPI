@@ -3,11 +3,13 @@ package cohort46.gracebakeryapi.bakery.orderitem.service;
 //import cohort46.gracebakeryapi.bakery.orderitem.controller.OrderitemController;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dao.BakeryoptionalRepository;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
+import cohort46.gracebakeryapi.bakery.bakeryoptional.model.Bakeryoptional;
 import cohort46.gracebakeryapi.bakery.filter.dao.FilterRepository;
 import cohort46.gracebakeryapi.bakery.filter.dto.FilterDto;
 import cohort46.gracebakeryapi.bakery.image.dto.ImageDto;
 import cohort46.gracebakeryapi.bakery.ingredient.dao.IngredientRepository;
 import cohort46.gracebakeryapi.bakery.ingredient.dto.IngredientDto;
+import cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize;
 import cohort46.gracebakeryapi.bakery.order.dao.OrderRepository;
 import cohort46.gracebakeryapi.bakery.order.model.Order;
 import cohort46.gracebakeryapi.bakery.orderitem.dao.OrderitemRepository;
@@ -33,6 +35,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class OrderitemServiceImpl implements OrderitemService {
@@ -56,11 +60,9 @@ public class OrderitemServiceImpl implements OrderitemService {
                 || (checkSource(orderitemDto)) ) { throw new FailedDependencyException("Creation failed"); };
         Orderitem orderitem = modelMapper.map(orderitemDto, Orderitem.class);
         orderitem.setId(null);
-    /*
-        orderitem.setCost(
-                orderitem.getProduct().
-        );
-      */
+
+        if(orderitemDto.getCost() == null) { orderitem.setCost(  calcucateCost(orderitem) ); };//если orderitemDto.Cost не задано то провести калькуляцию
+
         orderitemRepository.save(orderitem);
         orderRepository.findById(orderitem.getOrder().getId())
                 .orElseThrow(() -> new OrderitemNotFoundException(orderitem.getOrder().getId()))
@@ -94,6 +96,7 @@ public class OrderitemServiceImpl implements OrderitemService {
             }
         });
         if(checkSource(orderitemDto)) { throw new FailedDependencyException("Creation failed"); };///////////////////
+        if(orderitemDto.getCost() == null) { orderitem.setCost(  calcucateCost(orderitem) ); };//если orderitemDto.Cost не задано то провести калькуляцию
         return modelMapper.map(orderitemRepository.save(orderitem), OrderitemDto.class);
     }
 
@@ -102,8 +105,8 @@ public class OrderitemServiceImpl implements OrderitemService {
         Orderitem orderitem = orderitemRepository.findById(id).orElseThrow(() -> new OrderitemNotFoundException(id));
         //проверить статус order, удалять можно только заказ до состояния "в работе"
         if(  ( orderitem.getOrder() != null ) &&
-                ( orderitem.getOrder().getOrderstatus().getOrderStatus() != OrdersStatusEnum.Cart ) &&
-                        ( orderitem.getOrder().getOrderstatus().getOrderStatus() != OrdersStatusEnum.Created )
+                ( orderitem.getOrder().getOrderstatus().getStatus() != OrdersStatusEnum.Cart ) &&
+                        ( orderitem.getOrder().getOrderstatus().getStatus() != OrdersStatusEnum.Created )
         )  { throw new NotAcceptableException("Deletion is not available at this stage");  }
 
         orderitemRepository.delete(orderitem);
@@ -115,6 +118,14 @@ public class OrderitemServiceImpl implements OrderitemService {
     public OrderitemDto patchOrderitemCost(Long id, Double cost) {
         Orderitem orderitem = orderitemRepository.findById(id).orElseThrow(() -> new OrderitemNotFoundException(id));
         orderitem.setCost(cost);
+        return modelMapper.map(orderitemRepository.save(orderitem), OrderitemDto.class);
+    }
+
+    @Transactional
+    @Override
+    public OrderitemDto patchOrderitemComment(Long id, String comment) {
+        Orderitem orderitem = orderitemRepository.findById(id).orElseThrow(() -> new OrderitemNotFoundException(id));
+        orderitem.setComment(comment);
         return modelMapper.map(orderitemRepository.save(orderitem), OrderitemDto.class);
     }
 
@@ -166,38 +177,33 @@ public class OrderitemServiceImpl implements OrderitemService {
         if ((orderitemDto.getSizeid() == null) || (sizeRepository.findById(orderitemDto.getSizeid()).isEmpty())) { return false; };
         if ((orderitemDto.getIngredientid() == null) || (ingredientRepository.findById(orderitemDto.getIngredientid()).isEmpty())) { return false; }
 
+        if(  (orderitemDto.getQuantity() == null) || (orderitemDto.getQuantity() > 0) ) { return false; } // колличество должно быть , и оно должно быть больше 0
+
         return true;
     };
-/*
+//*
     private Double calcucateCost(Orderitem orderitem) {
-        orderitem.getProduct().getProductsizes().stream().
-                filter(ps -> ps.getSize().getId().equals(orderitem.getSize().getId())).findFirst().map(Productsize::getPrice) ;
+        double cost = 0;
+        Optional<Double> temp;
+
+        temp = orderitem.getProduct().getProductsizes().stream().filter(ps -> ps.getSize().getId().equals(orderitem.getSize().getId())).
+                findFirst().map(Productsize::getPrice) ; // temp = ценна продукта для этого размера, если этот размер относится к этому продукту
+        if (temp.isPresent()) { cost = temp.get(); }
+        else { throw new FailedDependencyException("Creation failed, no size or price in product"); };
+
+        for(Bakeryoptional bo : orderitem.getBakeryoptionals())
+        {
+            temp = bo.getOptionsizes().stream().filter(os -> os.getSize().getId().equals(orderitem.getSize().getId())).
+                    findFirst().map(Optionsize::getPrice) ;//temp = ценна очередной опции для этого размера, если этот размер относится к этой опции
+            if (temp.isPresent()) { cost = cost + temp.get(); }
+            else { throw new FailedDependencyException("Creation failed, no size or price in option"); };
+        }
+
+        cost = cost*orderitem.getQuantity();
+
+        return cost;
     };
-*/
-
-/*
-    private boolean checkSource(OrderitemDto orderitemDto)
-    {
-        if (orderitemDto.getOrderid() == null) {throw new FailedDependencyException("Order Id is required");};
-        orderRepository.findById(orderitemDto.getOrderid()).orElseThrow(() -> new OrderNotFoundException(orderitemDto.getOrderid()));
-
-        if (orderitemDto.getProductid() == null) {throw new FailedDependencyException("Product Id is required");};
-        productRepository.findById(orderitemDto.getProductid()).orElseThrow(() -> new ProductNotFoundException(orderitemDto.getProductid()));
-
-        for (BakeryoptionalDto bakeryoptionalDto : orderitemDto.getBakeryoptionals()) {
-            bakeryoptionalRepository.findById(bakeryoptionalDto.getId()).orElseThrow(() -> new BakeryoptionalNotFoundException(bakeryoptionalDto.getId()));
-        };
-
-        if (orderitemDto.getSizeid() == null) {throw new FailedDependencyException("Size Id is required");};
-        sizeRepository.findById(orderitemDto.getSizeid()).orElseThrow(() -> new SizeNotFoundException(orderitemDto.getSizeid()));
-
-        if (orderitemDto.getIngredientid() == null) {throw new FailedDependencyException("Ingredient Id is required");};
-        ingredientRepository.findById(orderitemDto.getIngredientid()).orElseThrow(() -> new IngredientNotFoundException(orderitemDto.getIngredientid()));
-
-        return true;
-    };
- */
-
+//*/
 
 
 }

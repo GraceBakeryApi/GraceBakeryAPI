@@ -12,6 +12,7 @@ public interface OrderitemService {
     OrderitemDto updateOrderitem(OrderitemDto orderitemDto, Long id);
     OrderitemDto deleteOrderitem(Long Id);
     OrderitemDto patchOrderitemCost(Long id, Double cost);
+    OrderitemDto patchOrderitemComment(Long id, String comment);
     Iterable<OrderitemDto> findOrderitemsByOrder(Long sectionid);
     Iterable<OrderitemDto> getOrderitemsAll();
     Iterable<OrderitemDto> findOrderitemsByProductId(Long product_id);
