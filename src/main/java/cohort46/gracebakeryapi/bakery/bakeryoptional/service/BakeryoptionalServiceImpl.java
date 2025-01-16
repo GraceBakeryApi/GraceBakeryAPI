@@ -63,9 +63,11 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
         bakeryoptionalDto.setId(id);
         Bakeryoptional bakeryoptional = bakeryoptionalRepository.findById(bakeryoptionalDto.getId()).orElseThrow(() -> new BakeryoptionalNotFoundException(  bakeryoptionalDto.getId()   ));
         bakeryoptionalDto.setImage(imageService.updateImageFileLink(bakeryoptionalDto.getImage(), bakeryoptional.getImage()));
+        optionsizeRepository.deleteAll(bakeryoptional.getOptionsizes());//проверить удаление старых значений!!!!!!!!
         bakeryoptional = modelMapper.map(bakeryoptionalDto, Bakeryoptional.class);
+        bakeryoptional.getOptionsizes().clear();
+        store(bakeryoptional);
         if (bakeryoptionalDto.getSizeprices() != null && !bakeryoptionalDto.getSizeprices().isEmpty()) {
-            optionsizeRepository.deleteAll(bakeryoptional.getOptionsizes());//проверить удаление старых значений!!!!!!!!
             for (SizePrice sizePrice : bakeryoptionalDto.getSizeprices()) {
                 Optionsize optionsize = new Optionsize();
                 optionsize.setSize(sizeRepository.findById(sizePrice.getSizeid()).orElseThrow(() -> new SizeNotFoundException( sizePrice.getSizeid() )));
