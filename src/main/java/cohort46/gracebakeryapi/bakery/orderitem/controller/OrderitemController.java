@@ -36,11 +36,13 @@ public class OrderitemController {
     OrderitemDto patchOrderitemComment(@PathVariable Long id, @PathVariable String comment){
         return orderitemService.patchOrderitemComment(id, comment);
     };
-
+/*
     @DeleteMapping("/orderitem")
     public OrderitemDto deleteOrderitem(@PathVariable Long id) {
         return orderitemService.deleteOrderitem(id)  ;
     }
+
+ */
 
     @GetMapping("/orderitems/order/{order_id}")
     public Iterable<OrderitemDto> findOrderitemsByOrder(@PathVariable Long order_id) {

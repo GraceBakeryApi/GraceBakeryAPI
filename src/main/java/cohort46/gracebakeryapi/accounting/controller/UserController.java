@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
+
 
 @RestController
 @RequestMapping("/api")
@@ -25,6 +27,12 @@ public class UserController {
     }
 
     @PutMapping("/user/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateUserPassword(Principal principal,  @RequestHeader("X-Password") String password) {
+        //
+    }
+
+    @PatchMapping("/user/password")
     public UserDto updateUser( @RequestBody UserDto userDto, @PathVariable Long id) {
         return userService.updateUser(userDto, id);
     }

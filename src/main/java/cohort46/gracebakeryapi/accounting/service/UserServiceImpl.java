@@ -11,6 +11,7 @@ import cohort46.gracebakeryapi.exception.OrderNotFoundException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -29,9 +30,22 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
+    public void changePassword(String oldPassword, String newPassword) {
+
+    }
+
+    @Transactional
+    @Override
+    public void changeLogin(String email) {
+
+    }
+
+    @Transactional
+    @Override
     public UserDto addUser(UserDto userDto) {
         User user = modelMapper.map(userDto, User.class);
         user.setId(null);
+        user.setPassword(BCrypt.hashpw(userDto.getPassword(), BCrypt.gensalt()));
         user = userRepository.save(user);
         if(user != null) {
             return modelMapper.map(user, UserDto.class);

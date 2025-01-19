@@ -4,6 +4,8 @@ import cohort46.gracebakeryapi.accounting.dto.UserDto;
 
 
 public interface UserService {
+    void changePassword(String oldPassword, String newPassword);
+    void changeLogin(String email);
 
     UserDto addUser(UserDto userDto);//Long
     UserDto findUserById(Long userId);

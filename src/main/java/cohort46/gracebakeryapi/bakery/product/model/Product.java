@@ -26,7 +26,7 @@ public class Product {
     //@Setter(AccessLevel.NONE)
     private Long id;
 
-    @ManyToOne( cascade = CascadeType.ALL)
+    @ManyToOne//( cascade = CascadeType.ALL)
     private Category category;
 
     private String title_de;

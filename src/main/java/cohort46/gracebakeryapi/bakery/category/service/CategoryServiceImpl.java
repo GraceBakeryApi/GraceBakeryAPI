@@ -31,10 +31,9 @@ public class CategoryServiceImpl implements CategoryService {
     //@Transactional
     @Override
     public CategoryDto addCategory(CategoryDto categoryDto) {
-        sectionRepository.findById(categoryDto.getSectionid());
+        Section section = sectionRepository.findById(categoryDto.getSectionid()).orElseThrow(() -> new SectionNotFoundException(categoryDto.getSectionid()));
         Category category = modelMapper.map(categoryDto, Category.class);
         category.setId(null);
-        Section section = sectionRepository.findById(categoryDto.getSectionid()).orElseThrow(() -> new CategoryNotFoundException(categoryDto.getSectionid()));
         category.setSection(section);
         category = categoryRepository.save(category);
         if(category != null) {
