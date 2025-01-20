@@ -3,9 +3,14 @@ package cohort46.gracebakeryapi.bakery.image.controller;
 import cohort46.gracebakeryapi.bakery.image.dto.ImageDto;
 import cohort46.gracebakeryapi.bakery.image.service.ImageService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
 
 
 @RestController
@@ -51,6 +56,20 @@ public class ImageController {
     public Boolean deleteImageFile(@RequestBody String link)
     {
         return imageService.deleteImageFile(link);
+    }
+
+    @GetMapping("/image/files/{filename}")
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+        // Путь к файлу на сервере
+        File file = new File("/home/images/" + filename);
+
+        if (file.exists()) {
+            Resource resource = new FileSystemResource(file);
+            return ResponseEntity.ok()
+                    .body(resource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

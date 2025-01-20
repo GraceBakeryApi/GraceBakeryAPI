@@ -1,4 +1,5 @@
 package cohort46.gracebakeryapi.configuration;
+import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +15,7 @@ public class FileController {
     @GetMapping("/files/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         // Путь к файлу на сервере
-        File file = new File("/home/images/" + filename);
-
+        File file = new File(GlobalVariables.getImagesPath() + filename);
         if (file.exists()) {
             Resource resource = new FileSystemResource(file);
             return ResponseEntity.ok()

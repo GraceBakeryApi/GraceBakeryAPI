@@ -21,8 +21,8 @@ public class GlobalVariables {
     };
 
     @Getter  //src\main\resources\static
-    //private static final String ImagesPath = System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator;
-    private static final String ImagesPath = "/" + File.separator + "home"+ File.separator + "images" + File.separator;
+    private static final String ImagesPath = System.getProperty("user.dir") + File.separator + "resources" + File.separator + "images" + File.separator;
+    //private static final String ImagesPath = "/" + File.separator + "home"+ File.separator + "images" + File.separator;
     @Getter
     private static final List<OrderStatus> statusList = List.of(
             new OrderStatus(OrdersStatusEnum.Cart, "Cart", "Карзина"),
