@@ -59,7 +59,7 @@ public class ImageController {
         return imageService.deleteImageFile(link);
     }
 
-    @GetMapping("/image/files/{filename}")
+    @GetMapping("/image/file/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         // Путь к файлу на сервере
         File file = new File(GlobalVariables.getImagesPath() + filename);
