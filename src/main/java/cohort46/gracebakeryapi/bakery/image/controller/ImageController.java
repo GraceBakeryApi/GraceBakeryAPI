@@ -2,6 +2,7 @@ package cohort46.gracebakeryapi.bakery.image.controller;
 
 import cohort46.gracebakeryapi.bakery.image.dto.ImageDto;
 import cohort46.gracebakeryapi.bakery.image.service.ImageService;
+import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -61,7 +62,7 @@ public class ImageController {
     @GetMapping("/image/files/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         // Путь к файлу на сервере
-        File file = new File("/home/images/" + filename);
+        File file = new File(GlobalVariables.getImagesPath() + filename);
 
         if (file.exists()) {
             Resource resource = new FileSystemResource(file);
