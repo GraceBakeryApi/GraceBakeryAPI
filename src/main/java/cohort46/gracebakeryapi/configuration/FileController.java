@@ -12,7 +12,7 @@ import java.io.File;
 @RestController
 public class FileController {
 
-    @GetMapping("/files/{filename}")
+    @GetMapping("/file/{filename}")
     public ResponseEntity<Resource> getFile(@PathVariable String filename) {
         // Путь к файлу на сервере
         File file = new File(GlobalVariables.getImagesPath() + filename);
