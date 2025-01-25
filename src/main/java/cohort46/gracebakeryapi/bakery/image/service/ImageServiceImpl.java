@@ -167,7 +167,7 @@ public class ImageServiceImpl implements ImageService {
         try {
             return (cloudinaryService.deleteImage(name.substring(name.lastIndexOf('/') + 1, name.lastIndexOf('.')))).equals("ok");
         } catch (IOException e) {
-            System.out.println( "Error deleting image: " + e.getMessage() );
+            System.out.println( "Error deleting image: " + e.getMessage() );//
             return false;
         }
     }
