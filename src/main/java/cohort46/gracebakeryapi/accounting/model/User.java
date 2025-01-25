@@ -46,7 +46,7 @@ public class User {
     @Transient
     private String passwordConfirm;
 
-    //private Long cartId;
+    private Long cartId;
 
 }
 //{user_id*, role, login, password, name, email, phone*, birth_date,  [address,...], is_registered}

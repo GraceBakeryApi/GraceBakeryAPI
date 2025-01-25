@@ -27,7 +27,7 @@ public class Order {
     //@Setter(AccessLevel.NONE)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private User user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
@@ -36,8 +36,7 @@ public class Order {
     private Double total;
     private String date;
 
-
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Address address;
 
     @Embedded

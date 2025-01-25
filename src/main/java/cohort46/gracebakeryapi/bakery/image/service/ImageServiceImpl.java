@@ -1,6 +1,5 @@
 package cohort46.gracebakeryapi.bakery.image.service;
 
-import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
 import cohort46.gracebakeryapi.bakery.image.controller.ImageController;
 import cohort46.gracebakeryapi.bakery.product.dao.ProductRepository;
 import cohort46.gracebakeryapi.bakery.image.dao.ImageRepository;
@@ -8,28 +7,23 @@ import cohort46.gracebakeryapi.bakery.image.dto.ImageDto;
 import cohort46.gracebakeryapi.exception.FailedDependencyException;
 import cohort46.gracebakeryapi.exception.ImageNotFoundException;
 import cohort46.gracebakeryapi.exception.ProductNotFoundException;
-import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.bakery.image.model.Image;
-import cohort46.gracebakeryapi.bakery.product.model.Product;
+import cohort46.gracebakeryapi.helperclasses.CloudinaryService;
 import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.server.DelegatingServerHttpResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Random;
-import java.util.stream.Stream;
 import java.io.File;
 import java.io.IOException;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +34,23 @@ public class ImageServiceImpl implements ImageService {
     private final ImageRepository imageRepository;
     private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
+
+    private final CloudinaryService cloudinaryService;
+
+
+
+    @Override
+    public String pushImageFile(MultipartFile file) {
+        return pushImageFileCloudinary(file);
+        //return pushImageFileFromDiskSpace(file);
+    }
+
+    @Override
+    public Boolean deleteImageFile(String link) {
+        return deleteImageFileCloudinary(link);
+        //return  deleteImageFileFromDiskSpace(link);
+    }
+
 
     @Transactional
     @Override
@@ -107,7 +118,17 @@ public class ImageServiceImpl implements ImageService {
 
     //@Transactional
     @Override
-    public String pushImageFile(MultipartFile file) {
+    public String pushImageFileCloudinary(MultipartFile file) {
+        try {
+            return cloudinaryService.uploadImage(file);
+        } catch (IOException e) {
+            throw new FailedDependencyException("file is not saved");
+        }
+    }
+
+
+    @Override
+    public String pushImageFileFromDiskSpace(MultipartFile file) {
         String fileName = String.valueOf(System.currentTimeMillis())
                 + String.valueOf(System.nanoTime())
                 + String.valueOf(new Random().nextInt(1000) + 1000);
@@ -123,7 +144,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Boolean deleteImageFile(String name) {
+    public Boolean deleteImageFileFromDiskSpace(String name) {
         Path path = Paths.get(name);
         try {
             // Проверяем, существует ли файл
@@ -137,6 +158,16 @@ public class ImageServiceImpl implements ImageService {
             }
         } catch (IOException e) {
             System.out.println("error, the file: " +  path + "is not deleted...  " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean deleteImageFileCloudinary(String name) {
+        try {
+            return (cloudinaryService.deleteImage(name.substring(name.lastIndexOf('/') + 1, name.lastIndexOf('.')))).equals("ok");
+        } catch (IOException e) {
+            System.out.println( "Error deleting image: " + e.getMessage() );
             return false;
         }
     }
@@ -182,6 +213,4 @@ public class ImageServiceImpl implements ImageService {
             return lastLink;
         }
     }
-
-
 }

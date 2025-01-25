@@ -7,6 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -44,6 +47,17 @@ public class ProductController {
     public Iterable<ProductDto> findProductsByCategory(@PathVariable Long category_id) {
         return productService.findProductsByCategory(category_id);
     }
+
+    @GetMapping("/gua/products/category/{category_id}")
+    public Iterable<ProductDto> findProductsByCategoryWithoutNoActive(@PathVariable Long category_id) {
+        Set<ProductDto> productDtos = new HashSet<>();
+        for(ProductDto temp : productService.findProductsByCategoryIdAndIsActive(category_id, true) )
+        {
+            productDtos.add(productService.getWithNoactives(temp));
+        }
+        return productDtos;
+    }
+
 
     @GetMapping("/products/category/{category_id}/isactive/{isActive}")
     public Iterable<ProductDto> findProductsByCategoryIdAndIsActive(@PathVariable Long category_id, @PathVariable Boolean isActive) {

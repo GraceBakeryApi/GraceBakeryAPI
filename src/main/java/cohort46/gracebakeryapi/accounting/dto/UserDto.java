@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -17,7 +18,7 @@ public class UserDto {
     @NotNull
     @Setter
     private Long id;
-    private Set<Long> role_Id;
+    private Set<Long> role_Id  = new HashSet<>();;
     private String login;
     private String password;
     private String firstName;
@@ -25,7 +26,7 @@ public class UserDto {
     private String email;
     private String phone;
     private long birthdate;
-    private Set<AddressDto> addresses;
+    private Set<AddressDto> addresses = new HashSet<>();
     //private Set<OrderDto> orders;
     private OrderDto cart;
 }

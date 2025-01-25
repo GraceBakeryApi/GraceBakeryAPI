@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -24,7 +25,7 @@ public class SectionDto {
     private Boolean isActive;
 
     @JsonProperty("category")
-    private Set<CategoryDto> categories;
+    private Set<CategoryDto> categories  = new HashSet<>();;
 }
 
 /*

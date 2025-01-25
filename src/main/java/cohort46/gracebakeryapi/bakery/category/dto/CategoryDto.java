@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -27,6 +28,6 @@ public class CategoryDto {
     private Long sectionid;
 
     @JsonProperty("product")
-    private Set<ProductDto> products;
+    private Set<ProductDto> products = new HashSet<>();;
 }
 //{category_id* , section_id* , title_de, title_ru, description_de, description_ru, image, is_active}

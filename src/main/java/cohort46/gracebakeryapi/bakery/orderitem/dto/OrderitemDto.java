@@ -31,7 +31,7 @@ public class OrderitemDto {
     @NotNull
     private Long productid;
 
-    private Set<BakeryoptionalDto> bakeryoptionals;
+    private Set<BakeryoptionalDto> bakeryoptionals  = new HashSet<>();;
 
     private Long sizeid;
 

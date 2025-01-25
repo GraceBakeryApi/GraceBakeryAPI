@@ -7,10 +7,12 @@ import cohort46.gracebakeryapi.bakery.address.controller.AddressController;
 import cohort46.gracebakeryapi.bakery.address.dao.AddressRepository;
 import cohort46.gracebakeryapi.bakery.address.dto.AddressDto;
 import cohort46.gracebakeryapi.bakery.address.model.Address;
+import cohort46.gracebakeryapi.bakery.order.service.OrderServiceImpl;
 import cohort46.gracebakeryapi.exception.AddressNotFoundException;
 import cohort46.gracebakeryapi.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import java.util.List;
 public class AddressServiceImpl implements AddressService {
 
     private final UserRepository userRepository;
+    private final OrderServiceImpl orderServiceImpl;
     private AddressController addressController;
 
     private final AddressRepository addressRepository;
@@ -52,6 +55,12 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDto deleteAddress(Long addressId) {
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new AddressNotFoundException(addressId));
+        /*
+        orderServiceImpl.findOrderByAdressId(addressId).forEach(order ->
+                order.getAddress() = null;
+                );
+
+         */
         addressRepository.delete(address);
         return modelMapper.map(address, AddressDto.class);
     }
@@ -68,7 +77,7 @@ public class AddressServiceImpl implements AddressService {
     @Transactional(readOnly = true)
     @Override
     public Iterable<AddressDto> findAddressesByUserId(Long userid) {
-        return addressRepository.findAllByUserId(userid).stream().map(a -> modelMapper.map(a, AddressDto.class)).toList();
+        return addressRepository.findAllByUserId(userid, Sort.by("id")).stream().map(a -> modelMapper.map(a, AddressDto.class)).toList();
     }
 
     @Transactional(readOnly = true)
@@ -95,6 +104,13 @@ public class AddressServiceImpl implements AddressService {
             }
         }
         return addressDtos;
+    }
+
+
+    @Transactional(readOnly = true)
+    @Override
+    public Iterable<AddressDto> findAddressesAll(){
+        return addressRepository.findAll().stream().map(a -> modelMapper.map(a, AddressDto.class)).toList();
     }
 
 }

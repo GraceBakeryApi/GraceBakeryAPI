@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antlr.v4.runtime.misc.NotNull;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -25,7 +26,9 @@ public class IngredientDto {
     @Setter
     private String image_ru;
 
+    private Boolean isActive;
+
     //@JsonProperty("product")
-    private Set<Long> productid;
+    private Set<Long> productid  = new HashSet<>();;
 }
 

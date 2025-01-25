@@ -50,13 +50,13 @@ public class ImageController {
     @RequestMapping(value = "/image/file", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public String pushImageFile(@RequestParam("file") MultipartFile file) {
-        return imageService.pushImageFile(file);
+        return imageService.pushImageFileCloudinary(file);
     }
 
     @DeleteMapping("/image/file")
     public Boolean deleteImageFile(@RequestBody String link)
     {
-        return imageService.deleteImageFile(link);
+        return imageService.deleteImageFileCloudinary(link);
     }
 
     @GetMapping("/image/file/{filename}")

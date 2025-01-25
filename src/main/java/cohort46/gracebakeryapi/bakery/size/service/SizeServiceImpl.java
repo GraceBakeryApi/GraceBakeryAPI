@@ -1,9 +1,12 @@
 package cohort46.gracebakeryapi.bakery.size.service;
 
+import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
+import cohort46.gracebakeryapi.bakery.category.model.Category;
 import cohort46.gracebakeryapi.bakery.size.controller.SizeController;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
+import cohort46.gracebakeryapi.exception.CategoryNotFoundException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.bakery.size.model.Size;
 import cohort46.gracebakeryapi.exception.SectionNotFoundException;
@@ -33,6 +36,14 @@ public class SizeServiceImpl implements SizeService {
             return modelMapper.map(size, SizeDto.class);
         }
         return null;
+    }
+
+    @Transactional
+    @Override
+    public SizeDto activateSize(Long Id, Boolean activate) {
+        Size size = sizeRepository.findById(Id).orElseThrow(() -> new SizeNotFoundException(Id));
+        size.setIsActive(activate);
+        return modelMapper.map(sizeRepository.saveAndFlush(size), SizeDto.class);
     }
 
     @Override

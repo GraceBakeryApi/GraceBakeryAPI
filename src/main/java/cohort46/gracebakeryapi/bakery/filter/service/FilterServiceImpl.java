@@ -37,6 +37,7 @@ public class FilterServiceImpl implements FilterService {
         return null;
     }
 
+    @Transactional
     @Override
     public FilterDto findFilterById(Long filterId) {
         Filter filter = filterRepository.findById(filterId).orElseThrow(() -> new FilterNotFoundException(filterId));
@@ -51,6 +52,14 @@ public class FilterServiceImpl implements FilterService {
         filterDto.setImage( imageService.updateImageFileLink(filterDto.getImage(), filter.getImage()) );
         modelMapper.map(filterDto, filter);
         return modelMapper.map(filterRepository.save(filter), FilterDto.class);
+    }
+
+    @Transactional
+    @Override
+    public FilterDto deleteFilter(Long id) {
+        Filter filter = filterRepository.findById(id).orElseThrow(() -> new FilterNotFoundException(id));
+        filterRepository.delete(filter);
+        return modelMapper.map(filter, FilterDto.class);
     }
 
     @Transactional(readOnly = true)

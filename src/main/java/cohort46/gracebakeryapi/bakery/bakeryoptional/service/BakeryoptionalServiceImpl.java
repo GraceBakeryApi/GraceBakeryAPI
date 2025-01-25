@@ -8,6 +8,8 @@ import cohort46.gracebakeryapi.bakery.image.service.ImageService;
 import cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize;
 import cohort46.gracebakeryapi.bakery.optionsize.service.OptionsizeService;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
+import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
+import cohort46.gracebakeryapi.bakery.size.model.Size;
 import cohort46.gracebakeryapi.exception.BakeryoptionalNotFoundException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.bakery.optionsize.dao.OptionsizeRepository;
@@ -79,6 +81,14 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
             }
         }
         return modelMapper.map(bakeryoptionalRepository.save(bakeryoptional), BakeryoptionalDto.class);
+    }
+
+    @Transactional
+    @Override
+    public BakeryoptionalDto activateBakeryoptional(Long Id, Boolean activate) {
+        Bakeryoptional bakeryoptional = bakeryoptionalRepository.findById(Id).orElseThrow(() -> new BakeryoptionalNotFoundException(Id));
+        bakeryoptional.setIsActive(activate);
+        return modelMapper.map(bakeryoptionalRepository.saveAndFlush(bakeryoptional), BakeryoptionalDto.class);
     }
 
     @Transactional(readOnly = true)

@@ -9,4 +9,5 @@ public interface AddressService {
     AddressDto updateAddress(AddressDto addressDto, Long id);
     Iterable<AddressDto> findAddressesByIncluding(String including);Iterable<AddressDto> findAddressesByUserId(Long userid);
     Iterable<AddressDto> findAddressesByName(String including);
+    Iterable<AddressDto> findAddressesAll();
 }

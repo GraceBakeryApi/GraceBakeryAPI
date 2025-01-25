@@ -32,11 +32,14 @@ public class Bakeryoptional {
     @OneToMany(mappedBy = "bakeryoptional", cascade = CascadeType.ALL)
     private Set<Optionsize> optionsizes = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)//////////
+    @ManyToMany
     private Set<Product> products = new HashSet<>();
 
-    @ManyToMany(cascade = CascadeType.ALL)/////////////
+    @ManyToMany
     private Set<Orderitem> orderitems = new HashSet<>();
+
+    @Column(nullable = false)
+    private Boolean isActive;
 
 }
 

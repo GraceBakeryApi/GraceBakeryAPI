@@ -5,11 +5,15 @@ import cohort46.gracebakeryapi.accounting.dao.UserRepository;
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
 import cohort46.gracebakeryapi.accounting.model.User;
 import cohort46.gracebakeryapi.bakery.order.dao.OrderRepository;
+import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
 import cohort46.gracebakeryapi.bakery.order.model.Order;
+import cohort46.gracebakeryapi.bakery.order.service.OrderServiceImpl;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.exception.OrderNotFoundException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.exception.UserNotFoundException;
+import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
+import cohort46.gracebakeryapi.helperclasses.OrdersStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;
@@ -21,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final OrderRepository orderRepository;
+    private final OrderServiceImpl orderServiceImpl;
     private UserController userController;
 
     private final UserRepository userRepository;
@@ -46,8 +51,14 @@ public class UserServiceImpl implements UserService {
         User user = modelMapper.map(userDto, User.class);
         user.setId(null);
         user.setPassword(BCrypt.hashpw(userDto.getPassword(), BCrypt.gensalt()));
-        user = userRepository.save(user);
+        user = userRepository.saveAndFlush(user);
         if(user != null) {
+            Order order = new Order();//создаем корзину для создаваемого user
+            order.setUser(user);
+            order.setOrderstatus(GlobalVariables.getStatusList().get(OrdersStatusEnum.Cart.ordinal()));
+            user.getOrders().add(order);
+            user.setCartId(orderRepository.saveAndFlush(order).getId());
+            user = userRepository.saveAndFlush(user);
             return modelMapper.map(user, UserDto.class);
         }
          //*/

@@ -4,6 +4,7 @@ import cohort46.gracebakeryapi.bakery.product.dto.ProductDto;
 import cohort46.gracebakeryapi.helperclasses.SizePrice;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -27,8 +28,10 @@ public class BakeryoptionalDto {
     private String image;
 
     //private Set<ProductDto> products;
-    private Set<Long> productid;
+    private Set<Long> productid  = new HashSet<>();;
 
     @JsonProperty("sizeprices")
-    private Set<SizePrice> sizeprices ;
+    private Set<SizePrice> sizeprices =  new HashSet<>();
+
+    private Boolean isActive;
 }

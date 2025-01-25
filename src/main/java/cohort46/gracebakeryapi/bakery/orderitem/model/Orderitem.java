@@ -26,19 +26,19 @@ public class Orderitem {
     //@Setter(AccessLevel.NONE)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Order order;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Product product;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany
     private Set<Bakeryoptional> bakeryoptionals = new HashSet<>();
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Size size;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Ingredient ingredient;
 
     private Integer quantity;

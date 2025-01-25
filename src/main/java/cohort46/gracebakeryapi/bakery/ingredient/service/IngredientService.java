@@ -9,6 +9,7 @@ public interface IngredientService {
     IngredientDto addIngredient(IngredientDto ingredientDto);//Long
     IngredientDto findIngredientById(Long ingredientId);
     IngredientDto updateIngredient(IngredientDto ingredientDto, Long id);
+    IngredientDto activateIngredient(Long id, Boolean isactive);
     Iterable<IngredientDto> getIngredientAll();
     Iterable<IngredientDto> findIngredientsByProduct(Long product_id);
     Ingredient store(Ingredient ingredient);

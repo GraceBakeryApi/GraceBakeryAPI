@@ -51,4 +51,9 @@ public class AddressController {
         return addressService.findAddressesByName(name);
     }
 
+    @GetMapping("/addresses")
+    public Iterable<AddressDto> findAddressesAll() {
+        return addressService.findAddressesAll();
+    }
+
 }

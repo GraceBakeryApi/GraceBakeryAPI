@@ -2,6 +2,7 @@ package cohort46.gracebakeryapi.bakery.bakeryoptional.controller;
 
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.service.BakeryoptionalService;
+import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,11 @@ public class BakeryoptionalController {
     @PutMapping("/api/option/{id}")
     public BakeryoptionalDto updateBakeryoptional(@RequestBody BakeryoptionalDto bakeryoptionalDto, @PathVariable Long id) {
         return bakeryoptionalService.updateBakeryoptional(bakeryoptionalDto, id);
+    }
+
+    @PatchMapping("/api/option/{id}/isactive/{isactive}")
+    BakeryoptionalDto activateBakeryoptional(@PathVariable Long id, @PathVariable Boolean isactive){
+        return bakeryoptionalService.activateBakeryoptional( id, isactive );
     }
 
     @GetMapping("/api/options/product/{product_id}")

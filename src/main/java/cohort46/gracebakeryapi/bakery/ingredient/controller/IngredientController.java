@@ -30,6 +30,11 @@ public class IngredientController {
         return ingredientService.updateIngredient(ingredientDto, id);
     }
 
+    @PatchMapping("/api/ingredient/{id}/isactive/{isactive}")
+    IngredientDto activateIngredient(@PathVariable Long id, @PathVariable Boolean isactive){
+        return ingredientService.activateIngredient( id, isactive );
+    }
+
     @GetMapping("/api/ingredients")
     public Iterable<IngredientDto> getIngredientAll() {
         return ingredientService.getIngredientAll();

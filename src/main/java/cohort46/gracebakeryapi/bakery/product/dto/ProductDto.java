@@ -33,15 +33,15 @@ public class ProductDto {
     private Long categoryid;
 
     @JsonProperty("image")
-    private Set<ImageDto> images;
+    private Set<ImageDto> images = new HashSet<>();;
 
 
-    private Set<IngredientDto> ingredients;
+    private Set<IngredientDto> ingredients = new HashSet<>();;
 
 
-    private Set<BakeryoptionalDto> bakeryoptionals;
+    private Set<BakeryoptionalDto> bakeryoptionals = new HashSet<>();;
 
-    private Set<FilterDto> filters;
+    private Set<FilterDto> filters = new HashSet<>();;
 
     @JsonProperty("sizeprices")
     private Set<SizePrice> sizeprices = new HashSet<>();

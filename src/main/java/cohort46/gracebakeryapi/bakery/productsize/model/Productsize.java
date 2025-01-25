@@ -19,13 +19,13 @@ public class Productsize {
     //@Setter(AccessLevel.NONE)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Size size;
 
     @NonNull
     @Column(nullable = false)
     private double price;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private Product product;
 }

@@ -28,6 +28,11 @@ public class FilterController {
         return filterService.updateFilter(filterDto, id);
     }
 
+    @DeleteMapping("/api/filter/{id}")
+    public FilterDto deleteFilter(@PathVariable Long id) {
+        return filterService.deleteFilter(id);
+    }
+
     @GetMapping("/api/filters")
     public Iterable<FilterDto> getFilterAll() {
         return filterService.getFilterAll();

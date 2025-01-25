@@ -28,6 +28,6 @@ public class Address {
 
     private String apartment;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private User user;
 }

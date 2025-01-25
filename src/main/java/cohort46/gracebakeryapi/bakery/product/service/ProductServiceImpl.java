@@ -229,6 +229,26 @@ public class ProductServiceImpl implements ProductService {
         return findProductsByPriceDtos;
     }
 
+    @Override
+    public ProductDto getWithNoactives(ProductDto productDto) {
+        ProductDto newProductDto = modelMapper.map(productDto, ProductDto.class);
+
+        newProductDto.getBakeryoptionals().clear();
+        newProductDto.getBakeryoptionals().addAll(productDto.getBakeryoptionals().stream().filter(BakeryoptionalDto::getIsActive).toList());
+
+        newProductDto.getSizeprices().clear();
+        newProductDto.getSizeprices().addAll(
+                productDto.getSizeprices().stream().filter(s ->
+                        sizeRepository.findById(s.getSizeid()).orElseThrow(() -> new SizeNotFoundException(s.getSizeid())).getIsActive()
+                ).toList()
+        );
+
+        newProductDto.getIngredients().clear();
+        newProductDto.getIngredients().addAll(productDto.getIngredients().stream().filter(IngredientDto::getIsActive).toList());
+
+        return newProductDto;
+    }
+
     private boolean checkSource(ProductDto productDto)
     {
         //if ((productDto.getCategoryid() == null) || (categoryRepository.findById(productDto.getCategoryid()).isEmpty())) { return false; }
@@ -257,5 +277,6 @@ public class ProductServiceImpl implements ProductService {
          */
         return true;
     };
+
 }
 

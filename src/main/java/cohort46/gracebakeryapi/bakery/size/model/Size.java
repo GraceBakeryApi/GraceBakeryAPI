@@ -33,7 +33,10 @@ public class Size {
     @OneToMany(mappedBy = "size", cascade = CascadeType.ALL)
     private Set<Productsize> productsizes = new HashSet<>();
 
-    @OneToMany(mappedBy = "size", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "size")
     private Set<Orderitem> orderitems = new HashSet<>();
+
+    @Column(nullable = false)
+    private Boolean isActive;
 }
 // {size_id* , title_de, title_ru, mass, diametr, persons}

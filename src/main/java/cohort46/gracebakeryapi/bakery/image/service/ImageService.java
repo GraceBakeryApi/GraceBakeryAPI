@@ -15,8 +15,13 @@ public interface ImageService {
     ImageDto updateImage(MultipartFile file, Long image_id, Long product_id);
     Image store(Image image);
     Iterable<ImageDto> findByProductId(Long product_id);
-    String pushImageFile(MultipartFile file);
-    Boolean deleteImageFile(String link);
     Boolean updateImageFile(MultipartFile file, String name);
     String updateImageFileLink(String newLink, String lastLink);
+
+    String pushImageFile(MultipartFile file);
+    Boolean deleteImageFile(String link);
+    String pushImageFileCloudinary(MultipartFile file);
+    Boolean deleteImageFileCloudinary(String link);
+    String pushImageFileFromDiskSpace(MultipartFile file);
+    Boolean deleteImageFileFromDiskSpace(String link);
 }

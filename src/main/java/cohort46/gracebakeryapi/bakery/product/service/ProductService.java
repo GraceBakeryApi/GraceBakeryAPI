@@ -8,6 +8,7 @@ public interface ProductService {
     ProductDto findProductById(Long productId);
     ProductDto updateProduct(ProductDto productDto, Long id);
     ProductDto activateProduct(Long Id, Boolean activate);
+    ProductDto getWithNoactives(ProductDto productDto);
     Iterable<ProductDto> findProductsByIsActive(Boolean isactive);
     Iterable<ProductDto> findProductsByCategory(Long category_id);
     Iterable<ProductDto> getProductsAll();

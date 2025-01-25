@@ -67,7 +67,7 @@ public class UserController {
         return userService.findUserByBirthdate(birthdate);
     }
 
-    @GetMapping("/users/order/{order_id}")
+    @GetMapping("/user/order/{order_id}")
     public UserDto findUserByOrderById(@PathVariable Long order_id) {
         return userService.findUserByOrderById(order_id);
     }

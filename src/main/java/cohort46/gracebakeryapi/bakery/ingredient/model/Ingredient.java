@@ -31,9 +31,12 @@ public class Ingredient {
     @Column(nullable = false)
     private String image_ru;
 
-    @ManyToMany(cascade = CascadeType.ALL)//////////////////
+    @Column(nullable = false)
+    private Boolean isActive;
+
+    @ManyToMany
     private Set<Product> products = new HashSet<>();
 
-    @OneToMany(mappedBy = "ingredient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "ingredient")
     private Set<Orderitem> orderitems = new HashSet<>();
 }

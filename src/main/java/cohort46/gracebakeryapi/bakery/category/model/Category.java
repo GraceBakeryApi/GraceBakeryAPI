@@ -31,7 +31,7 @@ public class Category {
     private Section section;
     @Column(nullable = false)
     private Boolean isActive;
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "category")
     private Set<Product> products = new HashSet<>();
 }
 // {category_id* , section_id, title, description, image, is_active}

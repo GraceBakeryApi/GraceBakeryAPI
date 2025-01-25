@@ -27,6 +27,17 @@ public class OrderController {
     public OrderDto updateOrder( @RequestBody OrderDto orderDto, @PathVariable Long id) {
         return orderService.updateOrder(orderDto, id);
     }
+
+    @DeleteMapping("/order/{id}")
+    public OrderDto deleteOrder( @PathVariable Long id) {
+        return orderService.deleteOrder(id);
+    }
+
+    @PatchMapping("/order/{id}/status/{status}")
+    OrderDto patchOrderStatus(@PathVariable Long id, @PathVariable String status){
+        return orderService.patchOrderStatus(id, status);
+    }
+
     @PatchMapping("/order/{id}/total/{total}")
     OrderDto patchOrderTotal(@PathVariable Long id, @PathVariable Double total){
         return orderService.patchOrderTotal(id, total);
@@ -42,7 +53,7 @@ public class OrderController {
         return orderService.patchOrderComment(id, comment);
     }
 
-    @GetMapping("/orders/order/{order_id}")
+    @GetMapping("/orders/user/{user_id}")
     public Iterable<OrderDto> findOrdersByUser(@PathVariable Long user_id) {
         return orderService.findOrdersByUser(user_id);
     }
@@ -56,4 +67,6 @@ public class OrderController {
     public Iterable<OrderDto> getOrdersAll() {
         return orderService.getOrdersAll();
     }
+
+
 }

@@ -54,7 +54,7 @@ public class Product {
     @Column(nullable = false)
     private Boolean isActive;
 //-------------------------------------------------------------------
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product")
     private Set<Orderitem> orderitems = new HashSet<>();
 }
 

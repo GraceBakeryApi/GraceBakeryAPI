@@ -2,6 +2,7 @@ package cohort46.gracebakeryapi.configuration;
 
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
 import cohort46.gracebakeryapi.accounting.model.User;
+import cohort46.gracebakeryapi.bakery.address.dao.AddressRepository;
 import cohort46.gracebakeryapi.bakery.address.dto.AddressDto;
 import cohort46.gracebakeryapi.bakery.address.model.Address;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
@@ -16,12 +17,16 @@ import cohort46.gracebakeryapi.bakery.ingredient.dto.IngredientDto;
 import cohort46.gracebakeryapi.bakery.ingredient.model.Ingredient;
 import cohort46.gracebakeryapi.bakery.optionsize.dto.OptionsizeDto;
 import cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize;
+import cohort46.gracebakeryapi.bakery.order.dao.OrderRepository;
+import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
+import cohort46.gracebakeryapi.bakery.order.model.Order;
 import cohort46.gracebakeryapi.bakery.product.dto.ProductDto;
 import cohort46.gracebakeryapi.bakery.product.model.Product;
 import cohort46.gracebakeryapi.bakery.productsize.dto.ProductsizeDto;
 import cohort46.gracebakeryapi.bakery.productsize.model.Productsize;
-import cohort46.gracebakeryapi.helperclasses.SizePrice;
-import cohort46.gracebakeryapi.helperclasses.updateFileLink;
+import cohort46.gracebakeryapi.exception.AddressNotFoundException;
+import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
+import cohort46.gracebakeryapi.helperclasses.*;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
@@ -30,6 +35,7 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -37,6 +43,13 @@ import java.util.Set;
 
 @Configuration
 public class ServiceConfiguration {
+    private final OrderRepository orderRepository;
+    private final AddressRepository addressRepository;
+
+    public ServiceConfiguration(OrderRepository orderRepository, AddressRepository addressRepository) {
+        this.orderRepository = orderRepository;
+        this.addressRepository = addressRepository;
+    }
 
 
     @Bean
@@ -185,15 +198,81 @@ public class ServiceConfiguration {
 
         });
 
+        /***************Order************/
+
+        modelMapper.addMappings(new PropertyMap<Order, OrderDto>() {
+            @Override
+            protected void configure() {
+                map(source.getUser().getId(), destination.getUserId());
+                map(source.getOrderstatus().getStatusDe(), destination.getStatus().getStatusDe());
+                map(source.getOrderstatus().getStatusRu(), destination.getStatus().getStatusRu());
+            }
+        });
+
+
+
+        modelMapper.addMappings(new PropertyMap<OrderDto, Order>() {
+            protected void configure() {
+                using(new Converter<AddressDto, Address>() {
+                    public Address convert(MappingContext<AddressDto, Address> context) {
+                        return addressRepository.findById(context.getSource().getId()).orElseThrow(() -> new AddressNotFoundException(context.getSource().getId()));// orElse(null) ;
+                    }
+                }).map(source.getAddress(), destination.getAddress());
+            }
+        });
+
+
+        modelMapper.addMappings(new PropertyMap<OrderDto, Order>() {
+            protected void configure() {
+                using(new Converter<OrderStatusDto, OrderStatus>() {
+                    public OrderStatus convert(MappingContext<OrderStatusDto, OrderStatus> context) {
+                        if(context.getSource() != null) {
+                            OrderStatus temp = GlobalVariables.getStatusList().stream().
+                                    filter(os -> os.getStatusDe().equals(context.getSource().getStatusDe())  ||
+                                            os.getStatusRu().equals(context.getSource().getStatusRu())
+                                    ).findFirst().orElseThrow(() -> new ResourceNotFoundException("OrderStatus type is error"));
+                            if( temp != GlobalVariables.getStatusList().get(OrdersStatusEnum.Cart.ordinal()) ) {return temp;}
+                        }
+                        return context.getDestination();
+                    }
+                }).map(source.getStatus(), destination.getOrderstatus());
+            }
+        });
+
+
+
+
+
+
+
+        /***************OrderStatus************/
+
+
+
+
+
+
         /***************User************/
         modelMapper.addMappings(new PropertyMap<UserDto, User>() {
             @Override
             protected void configure() {
                 //skip(destination.getAddresses());
                 //skip(destination.getRole());
-                //map(source.getCategoryid()  , destination.getCategory().getId() );
             }
         });
+
+        //*
+        modelMapper.addMappings(new PropertyMap<User, UserDto>() {
+            protected void configure() {
+                using(new Converter<Long, OrderDto>() {
+                    public OrderDto convert(MappingContext<Long, OrderDto> context) {
+                        return modelMapper.map(orderRepository.findById(context.getSource()).orElse(null) , OrderDto.class) ;
+                    }
+                }).map(source.getCartId(), destination.getCart());
+            }
+        });
+
+//*/
 
 
 

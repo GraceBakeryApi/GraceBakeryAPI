@@ -1,5 +1,6 @@
 package cohort46.gracebakeryapi.bakery.size.controller;
 
+import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
 import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
 import cohort46.gracebakeryapi.bakery.size.service.SizeService;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,12 @@ public class SizeController {
         return sizeService.updateSize(sizeDto, id);
     }
 
+    @PatchMapping("/api/size/{id}/isactive/{isactive}")
+    SizeDto activateSize(@PathVariable Long id, @PathVariable Boolean isactive){
+        return sizeService.activateSize( id, isactive );
+    }
+
     @GetMapping("/api/sizes")
     public Iterable<SizeDto> getSizesAll() { return sizeService.getSizesAll(); }
+
 }

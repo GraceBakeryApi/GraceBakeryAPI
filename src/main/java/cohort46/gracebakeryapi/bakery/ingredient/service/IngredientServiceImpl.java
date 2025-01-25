@@ -5,10 +5,13 @@ import cohort46.gracebakeryapi.bakery.ingredient.controller.IngredientController
 import cohort46.gracebakeryapi.bakery.ingredient.dao.IngredientRepository;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.ingredient.dto.IngredientDto;
+import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
+import cohort46.gracebakeryapi.bakery.size.model.Size;
 import cohort46.gracebakeryapi.exception.FilterNotFoundException;
 import cohort46.gracebakeryapi.exception.IngredientNotFoundException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.bakery.ingredient.model.Ingredient;
+import cohort46.gracebakeryapi.exception.SizeNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -52,6 +55,14 @@ public class IngredientServiceImpl implements IngredientService {
         ingredientDto.setImage_ru( imageService.updateImageFileLink(ingredientDto.getImage_ru(), ingredient.getImage_ru()) );
         modelMapper.map(ingredientDto, ingredient);
         return modelMapper.map(ingredientRepository.save(ingredient), IngredientDto.class);
+    }
+
+    @Transactional
+    @Override
+    public IngredientDto activateIngredient(Long Id, Boolean activate) {
+        Ingredient ingredient = ingredientRepository.findById(Id).orElseThrow(() -> new IngredientNotFoundException(Id));
+        ingredient.setIsActive(activate);
+        return modelMapper.map(ingredientRepository.saveAndFlush(ingredient), IngredientDto.class);
     }
 
     @Transactional(readOnly = true)
