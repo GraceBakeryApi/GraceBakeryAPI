@@ -98,17 +98,11 @@ public class ProductServiceImpl implements ProductService {
         }
 
 
-        if (productDto.getSizeprices() != null && !productDto.getSizeprices().isEmpty()) {
+        //if (productDto.getSizeprices() != null && !productDto.getSizeprices().isEmpty())
+        {
 
             for(Productsize pstemp : product.getProductsizes()){
-                /*
-                Size sizetemp = pstemp.getSize();
-                sizetemp.getProductsizes().remove(pstemp);
-                sizeRepository.saveAndFlush(sizetemp);
-
-                 */
                 productsizeService.deleteProductsize(pstemp.getId());
-
             }
 
             product.getProductsizes().clear();
@@ -127,7 +121,8 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        if (productDto.getFilters() != null && !productDto.getFilters().isEmpty()) {
+        //if (productDto.getFilters() != null && !productDto.getFilters().isEmpty())
+        {
             product.getFilters().forEach(f -> f.getProducts().remove(product));
             product.getFilters().clear();
             for (FilterDto filterDto : productDto.getFilters()) {
@@ -137,7 +132,8 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        if (productDto.getIngredients() != null && !productDto.getIngredients().isEmpty()) {//если в DTO есть запись - то обновляем данные
+        //if (productDto.getIngredients() != null && !productDto.getIngredients().isEmpty()) //если в DTO есть запись - то обновляем данные
+        {
             product.getIngredients().forEach(i -> i.getProducts().remove(product));//перебираем все ingredient относящиеся к этому product и у каждого ингредиента удаляем из списка продуктов текущий продукт
             product.getIngredients().clear();//очищаем список ингредиентов
             for (IngredientDto ingredientDto : productDto.getIngredients()) {// перебираем все записи в DTO
@@ -149,7 +145,8 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        if (productDto.getBakeryoptionals() != null && !productDto.getBakeryoptionals().isEmpty()) {
+        //if (productDto.getBakeryoptionals() != null && !productDto.getBakeryoptionals().isEmpty())
+        {
             product.getBakeryoptionals().forEach(s -> s.getProducts().remove(product));
             product.getBakeryoptionals().clear();
             for (BakeryoptionalDto bakeryoptionalDto : productDto.getBakeryoptionals()) {
@@ -159,7 +156,8 @@ public class ProductServiceImpl implements ProductService {
             }
         }
 
-        if (productDto.getImages() != null && !productDto.getImages().isEmpty()) {
+        //if (productDto.getImages() != null && !productDto.getImages().isEmpty())
+        {
             for (ImageDto imageDto : productDto.getImages()) {
                 Image image = imageRepository.findById(imageDto.getId()).orElseThrow(() -> new ImageNotFoundException(imageDto.getId()));
                 image.setProduct(product);
