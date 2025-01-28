@@ -25,6 +25,7 @@ import cohort46.gracebakeryapi.bakery.productsize.dao.ProductsizeRepository;
 import cohort46.gracebakeryapi.bakery.productsize.model.Productsize;
 import cohort46.gracebakeryapi.bakery.productsize.service.ProductsizeService;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
+import cohort46.gracebakeryapi.bakery.size.model.Size;
 import cohort46.gracebakeryapi.exception.*;
 import cohort46.gracebakeryapi.bakery.product.model.Product;
 import cohort46.gracebakeryapi.helperclasses.SizePrice;
@@ -90,21 +91,39 @@ public class ProductServiceImpl implements ProductService {
         productDto.setId(id);
         Product product = productRepository.findById(productDto.getId()).orElseThrow(() -> new ProductNotFoundException(  productDto.getId()   ));
 
+        product.setIsActive(productDto.getIsActive());
+
         if (productDto.getCategoryid() != null) {
             product.setCategory(categoryRepository.findById(productDto.getCategoryid()).orElseThrow(() -> new CategoryNotFoundException(productDto.getCategoryid())));
         }
 
 
         if (productDto.getSizeprices() != null && !productDto.getSizeprices().isEmpty()) {
-            productsizeRepository.deleteAll(product.getProductsizes());//проверить удаление старых значений!!!!!!!!
+
+            for(Productsize pstemp : product.getProductsizes()){
+                /*
+                Size sizetemp = pstemp.getSize();
+                sizetemp.getProductsizes().remove(pstemp);
+                sizeRepository.saveAndFlush(sizetemp);
+
+                 */
+                productsizeService.deleteProductsize(pstemp.getId());
+
+            }
+
+            product.getProductsizes().clear();
+            productRepository.saveAndFlush(product);
+
             for (SizePrice sizePrice : productDto.getSizeprices()) {
-                Productsize productsize = new Productsize();
-                productsize.setSize(sizeRepository.findById(sizePrice.getSizeid()).orElseThrow(() -> new SizeNotFoundException(sizePrice.getSizeid())));
-                productsize.setPrice(sizePrice.getPrice());
-                productsize.setProduct(product);
-                productsize.setId(null);
-                productsize = productsizeService.store(productsize);
-                product.getProductsizes().add(productsize);
+                if( product.getProductsizes().stream().noneMatch(ps -> Objects.equals(ps.getSize().getId(), sizePrice.getSizeid())) ) {
+                    Productsize productsize = new Productsize();
+                    productsize.setSize(sizeRepository.findById(sizePrice.getSizeid()).orElseThrow(() -> new SizeNotFoundException(sizePrice.getSizeid())));
+                    productsize.setPrice(sizePrice.getPrice());
+                    productsize.setProduct(product);
+                    productsize.setId(null);
+                    productsize = productsizeService.store(productsize);
+                    product.getProductsizes().add(productsize);
+                };
             }
         }
 

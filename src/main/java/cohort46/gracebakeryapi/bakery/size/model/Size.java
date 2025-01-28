@@ -27,10 +27,10 @@ public class Size {
     private int diameter;
     private int persons;
 
-    @OneToMany(mappedBy = "size", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "size", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<Optionsize> optionsizes = new HashSet<>();
 
-    @OneToMany(mappedBy = "size", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "size", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<Productsize> productsizes = new HashSet<>();
 
     @OneToMany(mappedBy = "size")

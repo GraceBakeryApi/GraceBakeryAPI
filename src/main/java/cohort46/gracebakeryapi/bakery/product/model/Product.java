@@ -48,7 +48,7 @@ public class Product {
     @ManyToMany
     private Set<Filter> filters = new HashSet<>();
 
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "product", cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     private Set<Productsize> productsizes = new HashSet<>();
 
     @Column(nullable = false)
