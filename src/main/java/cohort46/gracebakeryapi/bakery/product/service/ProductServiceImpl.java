@@ -129,6 +129,7 @@ public class ProductServiceImpl implements ProductService {
                 Filter filter = filterRepository.findById(filterDto.getId()).orElseThrow(() -> new FilterNotFoundException(filterDto.getId()));
                 filter.getProducts().add(product);
                 filterService.store(filter);
+                product.getFilters().add(filter);
             }
         }
 
@@ -153,6 +154,7 @@ public class ProductServiceImpl implements ProductService {
                 Bakeryoptional bakeryoptional = bakeryoptionalRepository.findById(bakeryoptionalDto.getId()).orElseThrow(() -> new BakeryoptionalNotFoundException(bakeryoptionalDto.getId()));
                 bakeryoptional.getProducts().add(product);
                 bakeryoptionalService.store(bakeryoptional);
+                product.getBakeryoptionals().add(bakeryoptional);
             }
         }
 

@@ -11,6 +11,7 @@ import cohort46.gracebakeryapi.bakery.image.model.Image;
 import cohort46.gracebakeryapi.helperclasses.CloudinaryService;
 import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
@@ -25,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
@@ -120,7 +122,7 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public String pushImageFileCloudinary(MultipartFile file) {
         try {
-            return cloudinaryService.uploadImage(file);
+            return cloudinaryService.uploadImage(file).replace("https://", "").replace("http://", "");
         } catch (IOException e) {
             throw new FailedDependencyException("file is not saved");
         }
@@ -203,6 +205,24 @@ public class ImageServiceImpl implements ImageService {
     @Transactional
     @Override
     public String updateImageFileLink(String newLink, String lastLink) {
+        return updateImageFileLinkCloudinary(newLink, lastLink);
+        //return updateImageFileLinkFromDiskSpace(newLink, lastLink);
+    }
+
+    @Override
+    public String updateImageFileLinkCloudinary(String newLink, String lastLink) {
+        if (!newLink.equals(lastLink)) {
+            deleteImageFile(lastLink);
+            return newLink;
+        }
+        else {
+            return lastLink;
+        }
+    }
+
+
+    @Override
+    public String updateImageFileLinkFromDiskSpace(String newLink, String lastLink) {
         Path newpath = Paths.get(newLink);
 
         if ( (!newLink.equals(lastLink)) && (Files.exists(newpath)) ) {
