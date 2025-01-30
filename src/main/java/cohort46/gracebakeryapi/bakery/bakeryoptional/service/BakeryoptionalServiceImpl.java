@@ -7,6 +7,7 @@ import cohort46.gracebakeryapi.bakery.bakeryoptional.model.Bakeryoptional;
 import cohort46.gracebakeryapi.bakery.image.service.ImageService;
 import cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize;
 import cohort46.gracebakeryapi.bakery.optionsize.service.OptionsizeService;
+import cohort46.gracebakeryapi.bakery.productsize.model.Productsize;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
 import cohort46.gracebakeryapi.bakery.size.model.Size;
@@ -65,11 +66,23 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
         bakeryoptionalDto.setId(id);
         Bakeryoptional bakeryoptional = bakeryoptionalRepository.findById(bakeryoptionalDto.getId()).orElseThrow(() -> new BakeryoptionalNotFoundException(  bakeryoptionalDto.getId()   ));
         bakeryoptionalDto.setImage(imageService.updateImageFileLink(bakeryoptionalDto.getImage(), bakeryoptional.getImage()));
+
+        for(Optionsize opstemp : bakeryoptional.getOptionsizes()){
+            optionsizeService.deleteOptionsize(opstemp.getId());
+        }
         optionsizeRepository.deleteAll(bakeryoptional.getOptionsizes());//проверить удаление старых значений!!!!!!!!
-        bakeryoptional = modelMapper.map(bakeryoptionalDto, Bakeryoptional.class);
+        optionsizeRepository.flush();
+
         bakeryoptional.getOptionsizes().clear();
+        bakeryoptionalRepository.save(bakeryoptional);
+
+        bakeryoptional = modelMapper.map(bakeryoptionalDto, Bakeryoptional.class);
+
+        bakeryoptional.getOptionsizes().clear();
+        bakeryoptionalRepository.saveAndFlush(bakeryoptional);
         store(bakeryoptional);
-        if (bakeryoptionalDto.getSizeprices() != null && !bakeryoptionalDto.getSizeprices().isEmpty()) {
+        //if (bakeryoptionalDto.getSizeprices() != null && !bakeryoptionalDto.getSizeprices().isEmpty())
+        {
             for (SizePrice sizePrice : bakeryoptionalDto.getSizeprices()) {
                 Optionsize optionsize = new Optionsize();
                 optionsize.setSize(sizeRepository.findById(sizePrice.getSizeid()).orElseThrow(() -> new SizeNotFoundException( sizePrice.getSizeid() )));

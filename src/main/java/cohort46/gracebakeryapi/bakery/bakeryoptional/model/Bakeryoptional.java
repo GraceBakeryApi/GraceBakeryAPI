@@ -32,7 +32,7 @@ public class Bakeryoptional {
     @OneToMany(mappedBy = "bakeryoptional", cascade = CascadeType.ALL)
     private Set<Optionsize> optionsizes = new HashSet<>();
 
-    @ManyToMany
+    @ManyToMany()
     private Set<Product> products = new HashSet<>();
 
     @ManyToMany

@@ -5,8 +5,13 @@ import cohort46.gracebakeryapi.bakery.filter.dao.FilterRepository;
 import cohort46.gracebakeryapi.bakery.filter.dto.FilterDto;
 import cohort46.gracebakeryapi.bakery.filter.model.Filter;
 import cohort46.gracebakeryapi.bakery.image.service.ImageService;
+import cohort46.gracebakeryapi.bakery.product.dao.ProductRepository;
+import cohort46.gracebakeryapi.bakery.product.dto.ProductDto;
+import cohort46.gracebakeryapi.bakery.product.model.Product;
+import cohort46.gracebakeryapi.bakery.product.service.ProductService;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.exception.FilterNotFoundException;
+import cohort46.gracebakeryapi.exception.ProductNotFoundException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.exception.SizeNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +19,13 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class FilterServiceImpl implements FilterService {
+    private final ProductRepository productRepository;
     private FilterController filterController;
 
     private final FilterRepository filterRepository;
@@ -24,6 +33,7 @@ public class FilterServiceImpl implements FilterService {
     private final ModelMapper modelMapper;
 
     private final ImageService imageService;
+    private final ProductService productService;
 
     @Transactional
     @Override
@@ -58,7 +68,13 @@ public class FilterServiceImpl implements FilterService {
     @Override
     public FilterDto deleteFilter(Long id) {
         Filter filter = filterRepository.findById(id).orElseThrow(() -> new FilterNotFoundException(id));
+        productService.findProductsByFilters(List.of(id)).forEach(productDto -> {
+            Product pr = productRepository.findById(productDto.getId()).orElseThrow(() -> new ProductNotFoundException(productDto.getId()));
+            pr.getFilters().remove(filter);
+            productRepository.saveAndFlush(pr);
+                });
         filterRepository.delete(filter);
+        filterRepository.flush();
         return modelMapper.map(filter, FilterDto.class);
     }
 

@@ -55,13 +55,10 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDto deleteAddress(Long addressId) {
         Address address = addressRepository.findById(addressId).orElseThrow(() -> new AddressNotFoundException(addressId));
-        /*
-        orderServiceImpl.findOrderByAdressId(addressId).forEach(order ->
-                order.getAddress() = null;
-                );
-
-         */
+        address.getUser().getAddresses().remove(address);
+        userRepository.saveAndFlush(address.getUser());
         addressRepository.delete(address);
+        addressRepository.flush();
         return modelMapper.map(address, AddressDto.class);
     }
 

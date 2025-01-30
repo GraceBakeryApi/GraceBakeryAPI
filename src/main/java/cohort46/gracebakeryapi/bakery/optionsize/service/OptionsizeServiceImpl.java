@@ -48,6 +48,7 @@ public class OptionsizeServiceImpl implements OptionsizeService {
     public OptionsizeDto deleteOptionsize(Long optionsizeId) {
         Optionsize optionsize = optionsizeRepository.findById(optionsizeId).orElseThrow(() -> new ResourceNotFoundException("bad Optionsize"));
         optionsizeRepository.delete(optionsize);
+        optionsizeRepository.flush();
         return modelMapper.map(optionsize, OptionsizeDto.class);
     }
 

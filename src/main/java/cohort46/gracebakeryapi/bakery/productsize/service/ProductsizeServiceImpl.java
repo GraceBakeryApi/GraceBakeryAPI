@@ -48,6 +48,7 @@ public class ProductsizeServiceImpl implements ProductsizeService {
     public ProductsizeDto deleteProductsize(Long productsizeId) {
         Productsize productsize = productsizeRepository.findById(productsizeId).orElseThrow(() -> new ResourceNotFoundException("bad Productsize"));
         productsizeRepository.delete(productsize);
+        productsizeRepository.flush();
         return modelMapper.map(productsize, ProductsizeDto.class);
     }
 
