@@ -5,13 +5,11 @@ import cohort46.gracebakeryapi.bakery.ingredient.controller.IngredientController
 import cohort46.gracebakeryapi.bakery.ingredient.dao.IngredientRepository;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.ingredient.dto.IngredientDto;
+import cohort46.gracebakeryapi.bakery.section.dto.SectionDto;
 import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
 import cohort46.gracebakeryapi.bakery.size.model.Size;
-import cohort46.gracebakeryapi.exception.FilterNotFoundException;
-import cohort46.gracebakeryapi.exception.IngredientNotFoundException;
-import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
+import cohort46.gracebakeryapi.exception.*;
 import cohort46.gracebakeryapi.bakery.ingredient.model.Ingredient;
-import cohort46.gracebakeryapi.exception.SizeNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -31,6 +29,7 @@ public class IngredientServiceImpl implements IngredientService {
     //@Transactional
     @Override
     public IngredientDto addIngredient(IngredientDto ingredientDto) {
+        if(!checkSource(ingredientDto)) throw new FailedDependencyException("Creating failed");
         Ingredient ingredient = modelMapper.map(ingredientDto, Ingredient.class);
         ingredient.setId(null);
         ingredient = ingredientRepository.save(ingredient);
@@ -49,6 +48,7 @@ public class IngredientServiceImpl implements IngredientService {
     @Transactional
     @Override
     public IngredientDto updateIngredient(IngredientDto ingredientDto, Long id) {
+        if(!checkSource(ingredientDto)) throw new FailedDependencyException("Updating failed");
         ingredientDto.setId(id);
         Ingredient ingredient = ingredientRepository.findById(ingredientDto.getId()).orElseThrow(() -> new IngredientNotFoundException(ingredientDto.getId()));
         ingredientDto.setImage_de( imageService.updateImageFileLink(ingredientDto.getImage_de(), ingredient.getImage_de()) );
@@ -82,4 +82,16 @@ public class IngredientServiceImpl implements IngredientService {
     public Ingredient store(Ingredient ingredient) {
         return ingredientRepository.saveAndFlush(ingredient);
     }
+
+    private boolean checkSource(IngredientDto ingredientDto) {
+
+        if(ingredientRepository.findAll().stream().anyMatch( p -> p.getTitle_de().equals(ingredientDto.getTitle_de()) ) ) {
+            throw new FailedDependencyException("Title De must be uniq ") ;};
+
+        if(ingredientRepository.findAll().stream().anyMatch( p -> p.getTitle_ru().equals(ingredientDto.getTitle_ru()) ) ) {
+            throw new FailedDependencyException("Title Ru must be uniq ") ;};
+
+        return true;
+    }
+
 }

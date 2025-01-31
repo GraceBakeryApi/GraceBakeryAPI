@@ -7,11 +7,14 @@ import cohort46.gracebakeryapi.bakery.bakeryoptional.model.Bakeryoptional;
 import cohort46.gracebakeryapi.bakery.image.service.ImageService;
 import cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize;
 import cohort46.gracebakeryapi.bakery.optionsize.service.OptionsizeService;
+import cohort46.gracebakeryapi.bakery.product.dto.ProductDto;
+import cohort46.gracebakeryapi.bakery.product.model.Product;
 import cohort46.gracebakeryapi.bakery.productsize.model.Productsize;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
 import cohort46.gracebakeryapi.bakery.size.model.Size;
 import cohort46.gracebakeryapi.exception.BakeryoptionalNotFoundException;
+import cohort46.gracebakeryapi.exception.FailedDependencyException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.bakery.optionsize.dao.OptionsizeRepository;
 import cohort46.gracebakeryapi.exception.SizeNotFoundException;
@@ -21,6 +24,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +45,7 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
     @Transactional
     @Override
     public BakeryoptionalDto addBakeryoptional(BakeryoptionalDto bakeryoptionalDto) {
+        if(!checkSource(bakeryoptionalDto)) throw new FailedDependencyException("Creating failed");
         Bakeryoptional bakeryoptional = modelMapper.map(bakeryoptionalDto, Bakeryoptional.class);
         if (bakeryoptionalDto.getSizeprices() != null && !bakeryoptionalDto.getSizeprices().isEmpty()) {
             for (SizePrice sizePrice : bakeryoptionalDto.getSizeprices()) {
@@ -63,24 +69,31 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
     @Transactional
     @Override
     public BakeryoptionalDto updateBakeryoptional(BakeryoptionalDto bakeryoptionalDto, Long id) {
+        if(!checkSource(bakeryoptionalDto)) throw new FailedDependencyException("Updating failed");
         bakeryoptionalDto.setId(id);
         Bakeryoptional bakeryoptional = bakeryoptionalRepository.findById(bakeryoptionalDto.getId()).orElseThrow(() -> new BakeryoptionalNotFoundException(  bakeryoptionalDto.getId()   ));
         bakeryoptionalDto.setImage(imageService.updateImageFileLink(bakeryoptionalDto.getImage(), bakeryoptional.getImage()));
 
-        for(Optionsize opstemp : bakeryoptional.getOptionsizes()){
+        Iterable<Optionsize> ops = bakeryoptional.getOptionsizes();
+
+        bakeryoptional.getOptionsizes().clear();
+        for(Optionsize opstemp : ops){
+
             optionsizeService.deleteOptionsize(opstemp.getId());
         }
-        optionsizeRepository.deleteAll(bakeryoptional.getOptionsizes());//проверить удаление старых значений!!!!!!!!
+        optionsizeRepository.deleteAll(ops);//проверить удаление старых значений!!!!!!!!
         optionsizeRepository.flush();
+        bakeryoptionalRepository.saveAndFlush(bakeryoptional);
 
-        bakeryoptional.getOptionsizes().clear();
-        bakeryoptionalRepository.save(bakeryoptional);
+        Set<Product> prtemp = bakeryoptional.getProducts();
 
         bakeryoptional = modelMapper.map(bakeryoptionalDto, Bakeryoptional.class);
-
-        bakeryoptional.getOptionsizes().clear();
+        bakeryoptional.getProducts().clear();
+        bakeryoptional.getProducts().addAll(prtemp);
         bakeryoptionalRepository.saveAndFlush(bakeryoptional);
         store(bakeryoptional);
+        bakeryoptional = bakeryoptionalRepository.findById(bakeryoptionalDto.getId()).orElseThrow(() -> new BakeryoptionalNotFoundException(  bakeryoptionalDto.getId()   ));
+
         //if (bakeryoptionalDto.getSizeprices() != null && !bakeryoptionalDto.getSizeprices().isEmpty())
         {
             for (SizePrice sizePrice : bakeryoptionalDto.getSizeprices()) {
@@ -123,5 +136,19 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
     @Override
     public Bakeryoptional store(Bakeryoptional option) {
         return bakeryoptionalRepository.saveAndFlush(option);
+    }
+
+    private boolean checkSource(BakeryoptionalDto bakeryoptionalDto) {
+
+        if(bakeryoptionalRepository.findAll().stream().anyMatch( p -> p.getTitle_de().equals(bakeryoptionalDto.getTitle_de()) ) ) {
+            throw new FailedDependencyException("Title De must be uniq ") ;};
+
+        if(bakeryoptionalRepository.findAll().stream().anyMatch( p -> p.getTitle_ru().equals(bakeryoptionalDto.getTitle_ru()) ) ) {
+            throw new FailedDependencyException("Title Ru must be uniq ") ;};
+
+        for (SizePrice sizePrice : bakeryoptionalDto.getSizeprices()) {
+            if(sizeRepository.findById(sizePrice.getSizeid()).isEmpty()) return false;
+        };
+        return true;
     }
 }

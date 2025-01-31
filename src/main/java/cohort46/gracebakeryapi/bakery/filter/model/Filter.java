@@ -25,6 +25,6 @@ public class Filter {
     private String description_ru;
     private String image;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     private Set<Product> products = new HashSet<>();
 }

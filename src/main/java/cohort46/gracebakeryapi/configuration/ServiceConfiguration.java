@@ -313,6 +313,36 @@ public class ServiceConfiguration {
             }
         });
 
+
+
+        /***************String*************/
+        /*
+        modelMapper.addMappings(new PropertyMap<String, String>() {
+            protected void configure() {
+                using(new Converter<String, String>() {
+                    public String convert(MappingContext<String, String> context) {
+                        return context.getSource().replaceAll("\\s+", " ").trim();
+                    }
+                }).map(source, destination);
+            }
+        });
+
+         */
+
+        Converter<String, String> trimAndNormalizeSpaces = new Converter<>() {
+            @Override
+            public String convert(MappingContext<String, String> context) {
+                if (context.getSource() == null) {
+                    return null;
+                }
+                return context.getSource().replaceAll("\\s+", " ").trim();
+            }
+        };
+
+        // Добавляем конвертер глобально
+        modelMapper.addConverter(trimAndNormalizeSpaces, String.class, String.class);
+
+
         return modelMapper;
     }
 }

@@ -27,6 +27,7 @@ public class ProductDto {
     private String description_de;
     private String description_ru;
     private Boolean isActive;
+    private String topimage;
 
     @NotNull
     //@Setter

@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.stream.Stream;
 
 public interface BakeryoptionalRepository extends JpaRepository<Bakeryoptional, Long> {
-    Stream<Category>  findByProductsId(Long product_id, Sort sort);
+    Stream<Bakeryoptional>  findByProductsId(Long product_id, Sort sort);
 }

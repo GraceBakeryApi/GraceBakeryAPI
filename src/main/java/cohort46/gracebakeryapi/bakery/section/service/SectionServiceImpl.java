@@ -1,10 +1,12 @@
 package cohort46.gracebakeryapi.bakery.section.service;
 
+import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
 import cohort46.gracebakeryapi.bakery.image.service.ImageService;
 import cohort46.gracebakeryapi.bakery.image.service.ImageServiceImpl;
 import cohort46.gracebakeryapi.bakery.section.controller.SectionController;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.section.dto.SectionDto;
+import cohort46.gracebakeryapi.exception.FailedDependencyException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.bakery.section.model.Section;
 import cohort46.gracebakeryapi.exception.SectionNotFoundException;
@@ -30,6 +32,7 @@ public class SectionServiceImpl implements SectionService {
     @Transactional
     @Override
     public SectionDto addSection(SectionDto sectionDto) {
+        if(!checkSource(sectionDto)) throw new FailedDependencyException("Creating failed");
         Section section = modelMapper.map(sectionDto, Section.class);
         section.setId(null);
         section = sectionRepository.save(section);
@@ -48,6 +51,7 @@ public class SectionServiceImpl implements SectionService {
     @Transactional
     @Override
     public SectionDto updateSection(SectionDto sectionDto, Long id) {
+        if(!checkSource(sectionDto)) throw new FailedDependencyException("Updating failed");
         sectionDto.setId(id);
         Section section = sectionRepository.findById(sectionDto.getId()).orElseThrow(() -> new SectionNotFoundException(  sectionDto.getId()    ));
         sectionDto.setImage( imageService.updateImageFileLink(sectionDto.getImage(), section.getImage()) );
@@ -76,4 +80,16 @@ public class SectionServiceImpl implements SectionService {
         sections.addAll(sectionRepository.findSectionsByIsActive(Boolean.FALSE).map(s -> modelMapper.map(s, SectionDto.class)).toList());
         return sections;
     }
+
+    private boolean checkSource(SectionDto sectionDto) {
+
+        if(sectionRepository.findAll().stream().anyMatch( p -> p.getTitle_de().equals(sectionDto.getTitle_de()) ) ) {
+            throw new FailedDependencyException("Title De must be uniq ") ;};
+
+        if(sectionRepository.findAll().stream().anyMatch( p -> p.getTitle_ru().equals(sectionDto.getTitle_ru()) ) ) {
+            throw new FailedDependencyException("Title Ru must be uniq ") ;};
+
+        return true;
+    }
+
 }

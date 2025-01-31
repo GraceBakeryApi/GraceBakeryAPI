@@ -6,11 +6,8 @@ import cohort46.gracebakeryapi.bakery.size.controller.SizeController;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
-import cohort46.gracebakeryapi.exception.CategoryNotFoundException;
-import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
+import cohort46.gracebakeryapi.exception.*;
 import cohort46.gracebakeryapi.bakery.size.model.Size;
-import cohort46.gracebakeryapi.exception.SectionNotFoundException;
-import cohort46.gracebakeryapi.exception.SizeNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
@@ -29,6 +26,7 @@ public class SizeServiceImpl implements SizeService {
     @Transactional
     @Override
     public SizeDto addSize(SizeDto sizeDto) {
+        if(!checkSource(sizeDto)) throw new FailedDependencyException("Creating failed");
         Size size = modelMapper.map(sizeDto, Size.class);
         size.setId(null);
         size = sizeRepository.save(size);
@@ -55,6 +53,7 @@ public class SizeServiceImpl implements SizeService {
     @Transactional
     @Override
     public SizeDto updateSize(SizeDto sizeDto, Long id) {
+        if(!checkSource(sizeDto)) throw new FailedDependencyException("Updating failed");
         sizeDto.setId(id);
         Size size = sizeRepository.findById(sizeDto.getId()).orElseThrow(() -> new SizeNotFoundException(sizeDto.getId()));
         modelMapper.map(sizeDto, size);
@@ -67,4 +66,16 @@ public class SizeServiceImpl implements SizeService {
         //сортировка по полю "persons"  по возрастанию
         return sizeRepository.findAll(Sort.by("persons")).stream().map(s -> modelMapper.map(s, SizeDto.class)).toList() ;
     }
+
+    private boolean checkSource(SizeDto sizeDto) {
+
+        if(sizeRepository.findAll().stream().anyMatch( p -> p.getTitle_de().equals(sizeDto.getTitle_de()) ) ) {
+            throw new FailedDependencyException("Title De must be uniq ") ;};
+
+        if(sizeRepository.findAll().stream().anyMatch( p -> p.getTitle_ru().equals(sizeDto.getTitle_ru()) ) ) {
+            throw new FailedDependencyException("Title Ru must be uniq ") ;};
+
+        return true;
+    }
+
 }

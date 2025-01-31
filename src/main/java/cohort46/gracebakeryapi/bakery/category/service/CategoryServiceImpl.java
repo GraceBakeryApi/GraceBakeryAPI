@@ -1,15 +1,18 @@
 package cohort46.gracebakeryapi.bakery.category.service;
 
+import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
 import cohort46.gracebakeryapi.bakery.category.controller.CategoryController;
 import cohort46.gracebakeryapi.bakery.category.dao.CategoryRepository;
 import cohort46.gracebakeryapi.bakery.image.service.ImageService;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
 import cohort46.gracebakeryapi.exception.CategoryNotFoundException;
+import cohort46.gracebakeryapi.exception.FailedDependencyException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.bakery.category.model.Category;
 import cohort46.gracebakeryapi.bakery.section.model.Section;
 import cohort46.gracebakeryapi.exception.SectionNotFoundException;
+import cohort46.gracebakeryapi.helperclasses.SizePrice;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
@@ -28,9 +31,10 @@ public class CategoryServiceImpl implements CategoryService {
     private final ImageService imageService;
 
 
-    //@Transactional
+    @Transactional
     @Override
     public CategoryDto addCategory(CategoryDto categoryDto) {
+        if(!checkSource(categoryDto)) throw new FailedDependencyException("Creating failed");
         Section section = sectionRepository.findById(categoryDto.getSectionid()).orElseThrow(() -> new SectionNotFoundException(categoryDto.getSectionid()));
         Category category = modelMapper.map(categoryDto, Category.class);
         category.setId(null);
@@ -51,6 +55,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     @Override
     public CategoryDto updateCategory(CategoryDto categoryDto, Long id) {
+        if(!checkSource(categoryDto)) throw new FailedDependencyException("Updating failed");
         categoryDto.setId(id);
         Category category = categoryRepository.findById(categoryDto.getId()).orElseThrow(() -> new CategoryNotFoundException((categoryDto.getId())));
         categoryDto.setImage( imageService.updateImageFileLink(categoryDto.getImage(), category.getImage()) );
@@ -94,5 +99,19 @@ public class CategoryServiceImpl implements CategoryService {
         sectionRepository.findById(section_id).orElseThrow(() -> new SectionNotFoundException(section_id));
         return categoryRepository.findCategoriesBySectionIdAndIsActive(section_id, isactive).map(s -> modelMapper.map(s, CategoryDto.class)).toList() ;
     }
+
+    private boolean checkSource(CategoryDto categoryDto) {
+
+        if(categoryRepository.findAll().stream().anyMatch( p -> p.getTitle_de().equals(categoryDto.getTitle_de()) ) ) {
+            throw new FailedDependencyException("Title De must be uniq ") ;};
+
+        if(categoryRepository.findAll().stream().anyMatch( p -> p.getTitle_ru().equals(categoryDto.getTitle_ru()) ) ) {
+            throw new FailedDependencyException("Title Ru must be uniq ") ;};
+
+        if(sectionRepository.findById(categoryDto.getSectionid()).isEmpty()) {return false; }
+
+        return true;
+    }
+
 
 }

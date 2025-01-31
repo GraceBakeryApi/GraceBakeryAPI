@@ -92,6 +92,11 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productDto.getId()).orElseThrow(() -> new ProductNotFoundException(  productDto.getId()   ));
 
         product.setIsActive(productDto.getIsActive());
+        product.setTitle_ru(productDto.getTitle_ru());
+        product.setTitle_de(productDto.getTitle_de());
+        product.setDescription_de(productDto.getDescription_de());
+        product.setDescription_ru(productDto.getDescription_ru());
+        product.setTopimage(product.getTopimage());
 
         if (productDto.getCategoryid() != null) {
             product.setCategory(categoryRepository.findById(productDto.getCategoryid()).orElseThrow(() -> new CategoryNotFoundException(productDto.getCategoryid())));
@@ -273,6 +278,9 @@ public class ProductServiceImpl implements ProductService {
         //if ((productDto.getCategoryid() == null) || (categoryRepository.findById(productDto.getCategoryid()).isEmpty())) { return false; }
 
         if ((productDto.getCategoryid() != null) && categoryRepository.findById(productDto.getCategoryid()).isEmpty()) { return false; }
+
+        if(productRepository.findAll().stream().anyMatch( p -> p.getTitle_de().equals(productDto.getTitle_de()) ) ) { throw new FailedDependencyException("Title De must be uniq ") ;};
+        if(productRepository.findAll().stream().anyMatch( p -> p.getTitle_ru().equals(productDto.getTitle_ru()) ) ) { throw new FailedDependencyException("Title Ru must be uniq ") ;};
 
         for (ImageDto imageDto : productDto.getImages()) {
             if(imageRepository.findById(imageDto.getId()).isEmpty()) return false;
