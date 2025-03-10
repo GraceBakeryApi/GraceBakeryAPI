@@ -1,6 +1,6 @@
 package cohort46.gracebakeryapi.bakery.order.model;
 
-import cohort46.gracebakeryapi.accounting.model.User;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.bakery.address.model.Address;
 import cohort46.gracebakeryapi.bakery.orderitem.model.Orderitem;
 //import cohort46.gracebakeryapi.helperclasses.OrderStatus;
@@ -28,7 +28,7 @@ public class Order {
     private Long id;
 
     @ManyToOne
-    private User user;
+    private UserAccount user;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private Set<Orderitem> orderitems = new HashSet<>();

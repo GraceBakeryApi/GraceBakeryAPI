@@ -3,18 +3,14 @@ package cohort46.gracebakeryapi.bakery.order.service;
 //import cohort46.gracebakeryapi.bakery.order.controller.OrderController;
 
 import cohort46.gracebakeryapi.accounting.dao.UserRepository;
-import cohort46.gracebakeryapi.accounting.model.User;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.bakery.address.dao.AddressRepository;
-import cohort46.gracebakeryapi.bakery.address.model.Address;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dao.BakeryoptionalRepository;
-import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
 import cohort46.gracebakeryapi.bakery.filter.dao.FilterRepository;
 import cohort46.gracebakeryapi.bakery.ingredient.dao.IngredientRepository;
 import cohort46.gracebakeryapi.bakery.order.dao.OrderRepository;
-import cohort46.gracebakeryapi.bakery.order.dao.OrderRepository;
 import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
 import cohort46.gracebakeryapi.bakery.order.model.Order;
-import cohort46.gracebakeryapi.bakery.order.service.OrderService;
 import cohort46.gracebakeryapi.bakery.orderitem.dao.OrderitemRepository;
 import cohort46.gracebakeryapi.bakery.orderitem.dto.OrderitemDto;
 import cohort46.gracebakeryapi.bakery.product.dao.ProductRepository;
@@ -25,7 +21,6 @@ import cohort46.gracebakeryapi.helperclasses.OrderStatus;
 import cohort46.gracebakeryapi.helperclasses.OrdersStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.PropertyMap;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +49,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto addOrder(OrderDto orderDto) {
         if(  (orderDto.getUserId() == null) || (!checkSource(orderDto)) ) { throw new FailedDependencyException("Creation failed"); };
-        User user = userRepository.findById(orderDto.getUserId()).orElseThrow(() -> new UserNotFoundException(orderDto.getUserId()));
+        UserAccount user = userRepository.findById(orderDto.getUserId()).orElseThrow(() -> new UserNotFoundException(orderDto.getUserId()));
         return modelMapper.map(createCart(user, modelMapper.map(orderDto, Order.class)), OrderDto.class);
     }
 
@@ -80,11 +75,11 @@ public class OrderServiceImpl implements OrderService {
         modelMapper.addMappings(new PropertyMap<OrderDto, Order>() {
             @Override
             protected void configure() {
-                skip(destination.getUser());  // Игнорируем поле User
+                skip(destination.getUser());  // Игнорируем поле UserAccount
             }
         });
          */
-        User tempOrder = order.getUser();
+        UserAccount tempOrder = order.getUser();
         //OrderStatus tempOrderStatus = order.getOrderstatus();
         modelMapper.map(orderDto, order);
         order.setUser(tempOrder); //сохраняем user таким , какой он был
@@ -189,7 +184,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
-    public Order createCart(User user, Order order){
+    public Order createCart(UserAccount user, Order order){
         Optional<Order> temp = user.getOrders().stream().filter(o ->
                 o.getOrderstatus().getStatus().equals(OrdersStatusEnum.Cart)).findFirst();//если у user уже есть корзина, то вернуть ее
         if(temp.isPresent()) { return temp.get();}
@@ -223,7 +218,7 @@ Order order = new Order();//создаем корзину для создава�
     @Override
     public OrderDto addOrder(OrderDto orderDto) {
         if(  (orderDto.getUserId() == null) || (!checkSource(orderDto)) ) { throw new FailedDependencyException("Creation failed"); };
-        User user = userRepository.findById(orderDto.getUserId()).orElseThrow(() -> new UserNotFoundException(orderDto.getUserId()));
+        UserAccount user = userRepository.findById(orderDto.getUserId()).orElseThrow(() -> new UserNotFoundException(orderDto.getUserId()));
         Optional<Order> temp = user.getOrders().stream().filter(order ->
                 order.getOrderstatus().getStatus().equals(OrdersStatusEnum.Cart)).findFirst();//если у user уже есть корзина, то вернуть ее
         if(temp.isPresent()) { return modelMapper.map(temp.get(), OrderDto.class) ; }

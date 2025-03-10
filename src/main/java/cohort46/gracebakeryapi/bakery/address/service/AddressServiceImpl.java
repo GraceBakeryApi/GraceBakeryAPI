@@ -2,7 +2,7 @@ package cohort46.gracebakeryapi.bakery.address.service;
 
 //import cohort46.gracebakeryapi.accounting.dao.UserRepository;
 import cohort46.gracebakeryapi.accounting.dao.UserRepository;
-import cohort46.gracebakeryapi.accounting.model.User;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.bakery.address.controller.AddressController;
 import cohort46.gracebakeryapi.bakery.address.dao.AddressRepository;
 import cohort46.gracebakeryapi.bakery.address.dto.AddressDto;
@@ -16,7 +16,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -35,7 +34,7 @@ public class AddressServiceImpl implements AddressService {
     @Override
     public AddressDto addAddress(AddressDto addressDto) {
         Address address = modelMapper.map(addressDto, Address.class);
-        User user = userRepository.findById(addressDto.getUserid()).orElseThrow(() -> new UserNotFoundException(addressDto.getUserid()));
+        UserAccount user = userRepository.findById(addressDto.getUserid()).orElseThrow(() -> new UserNotFoundException(addressDto.getUserid()));
         address.setUser(user);
         address.setId(null);
         address = addressRepository.save(address);

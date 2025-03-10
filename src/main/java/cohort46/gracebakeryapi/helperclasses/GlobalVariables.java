@@ -27,7 +27,7 @@ public class GlobalVariables {
     private static final List<OrderStatus> statusList = List.of(
             new OrderStatus(OrdersStatusEnum.Cart, "Cart", "Карзина"),
             new OrderStatus(OrdersStatusEnum.Created, "Created", "Создан"),
-            new OrderStatus(OrdersStatusEnum.CanceledByUser, "Canceled by User", "Отменен пользователем"),
+            new OrderStatus(OrdersStatusEnum.CanceledByUser, "Canceled by UserAccount", "Отменен пользователем"),
             new OrderStatus(OrdersStatusEnum.Viewed, "Viewed", "Просмотрен"),
             new OrderStatus(OrdersStatusEnum.CanceledByAdmin, "Canceled by Administrator", "Отменен администратором"),
             new OrderStatus(OrdersStatusEnum.Agreed, "Has been agreed", "Согласован"),

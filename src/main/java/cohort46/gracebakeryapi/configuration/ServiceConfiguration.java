@@ -1,7 +1,8 @@
 package cohort46.gracebakeryapi.configuration;
 
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
-import cohort46.gracebakeryapi.accounting.model.User;
+import cohort46.gracebakeryapi.accounting.model.RoleEnum;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.bakery.address.dao.AddressRepository;
 import cohort46.gracebakeryapi.bakery.address.dto.AddressDto;
 import cohort46.gracebakeryapi.bakery.address.model.Address;
@@ -25,6 +26,7 @@ import cohort46.gracebakeryapi.bakery.product.model.Product;
 import cohort46.gracebakeryapi.bakery.productsize.dto.ProductsizeDto;
 import cohort46.gracebakeryapi.bakery.productsize.model.Productsize;
 import cohort46.gracebakeryapi.exception.AddressNotFoundException;
+import cohort46.gracebakeryapi.exception.FailedDependencyException;
 import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.helperclasses.*;
 import org.modelmapper.Converter;
@@ -35,7 +37,6 @@ import org.modelmapper.convention.MatchingStrategies;
 import org.modelmapper.spi.MappingContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -252,17 +253,36 @@ public class ServiceConfiguration {
 
 
 
-        /***************User************/
-        modelMapper.addMappings(new PropertyMap<UserDto, User>() {
-            @Override
+        /***************UserAccount************/
+
+        modelMapper.addMappings(new PropertyMap<UserAccount, UserDto>() {
             protected void configure() {
-                //skip(destination.getAddresses());
-                //skip(destination.getRole());
+                using(new Converter<RoleEnum, Long>() {
+                    public Long convert(MappingContext<RoleEnum, Long> context) {
+                        return Long.valueOf((long) context.getSource().ordinal());
+                    }
+                }).map(source.getRole(), destination.getRole_Id());
             }
         });
 
+        modelMapper.addMappings(new PropertyMap<UserDto, UserAccount>() {
+            protected void configure() {
+                using(new Converter<Long, RoleEnum>() {
+                    public RoleEnum convert(MappingContext<Long, RoleEnum> context) {
+                        try {
+                            return RoleEnum.values()[context.getSource().intValue()];
+                        } catch (ArrayIndexOutOfBoundsException e) {
+                            throw new FailedDependencyException("error: invalid role specified")  ;
+                        }
+                    }
+                }).map(source.getRole_Id(), destination.getRole());
+            }
+        });
+        //skip(destination.getAddresses());
+        //skip(destination.getRole());
+
         //*
-        modelMapper.addMappings(new PropertyMap<User, UserDto>() {
+        modelMapper.addMappings(new PropertyMap<UserAccount, UserDto>() {
             protected void configure() {
                 using(new Converter<Long, OrderDto>() {
                     public OrderDto convert(MappingContext<Long, OrderDto> context) {

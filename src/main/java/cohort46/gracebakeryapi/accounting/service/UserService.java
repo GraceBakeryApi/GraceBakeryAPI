@@ -1,18 +1,24 @@
 package cohort46.gracebakeryapi.accounting.service;
 
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
+import org.springframework.web.bind.annotation.RequestHeader;
+
+import java.security.Principal;
 
 
 public interface UserService {
-    void changePassword(String oldPassword, String newPassword);
-    void changeLogin(String email);
-
+    UserDto userLogin(String login, String password);
     UserDto addUser(UserDto userDto);//Long
     UserDto findUserById(Long userId);
     UserDto updateUser(UserDto userDto, Long id);
+    UserDto updateMe(UserDto userDto, UserAccount user);
     UserDto findUserByEmail(String email);
     UserDto findUserByPhone(String phone);
     UserDto findUserByOrderById(Long order_id);
+    void changeUserPassword(Long id, String password);
+    void changeMePassword(UserAccount user, String password);
+    UserDto findUserByLogin(String login);
     Iterable<UserDto> getUsersAll();
     Iterable<UserDto> findUserByBirthdate(Long birthdate);
     Iterable<UserDto> findUserByFirstName(String firstname);

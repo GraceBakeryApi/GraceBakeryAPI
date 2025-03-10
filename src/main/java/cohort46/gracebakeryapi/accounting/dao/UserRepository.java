@@ -1,18 +1,20 @@
 package cohort46.gracebakeryapi.accounting.dao;
 
-import cohort46.gracebakeryapi.accounting.model.User;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<UserAccount, Long> {
     //*
-    User findUserByEmail(String email);
-    User findUserByPhone(String phone);
-    Stream<User> findUserByBirthdate(Long birthdate, Sort sort);
-    Stream<User> findUserByFirstName(String firstname, Sort sort);
-    Stream<User> findUserByLastName(String lastname, Sort sort);
+    Optional<UserAccount> findUserByEmail(String email);
+    Optional<UserAccount> findUserByPhone(String phone);
+    Optional<UserAccount> findUserByLogin(String login);
+    Stream<UserAccount> findUserByBirthdate(Long birthdate, Sort sort);
+    Stream<UserAccount> findUserByFirstName(String firstname, Sort sort);
+    Stream<UserAccount> findUserByLastName(String lastname, Sort sort);
 
      //*/
 

@@ -1,10 +1,8 @@
 package cohort46.gracebakeryapi.accounting.model;
 
-import cohort46.gracebakeryapi.accounting.model.Role;
 import cohort46.gracebakeryapi.bakery.address.model.Address;
 //import cohort46.gracebakeryapi.bakery.order.model.Order;
 import cohort46.gracebakeryapi.bakery.order.model.Order;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,34 +15,42 @@ import java.util.Set;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
-public class User {
+@Table(name = "user")
+public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     //@Setter(AccessLevel.NONE)
     private Long id;
-    //*
+    RoleEnum role;
+    /*
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> role = new HashSet<>();;
      //*/
+     @Column(unique =true)
     private String login;
     private String password;
     private String firstName;
     private String lastName;
+    @Column(unique =true)
     private String email;
 
     private String phone;
 
     private long birthdate;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Address> addresses = new HashSet<>();
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
     private Set<Order> orders = new HashSet<>();
 
+
+
+    /*
     @Transient
     private String passwordConfirm;
+     */
 
     private Long cartId;
 
@@ -71,7 +77,7 @@ import java.util.Set;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
-public class User {
+public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)

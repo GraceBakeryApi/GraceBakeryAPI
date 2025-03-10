@@ -1,6 +1,6 @@
 package cohort46.gracebakeryapi.bakery.address.model;
 
-import cohort46.gracebakeryapi.accounting.model.User;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,5 +29,5 @@ public class Address {
     private String apartment;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    private User user;
+    private UserAccount user;
 }

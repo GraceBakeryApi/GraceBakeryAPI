@@ -1,10 +1,9 @@
 package cohort46.gracebakeryapi.bakery.order.service;
 
 
-import cohort46.gracebakeryapi.accounting.model.User;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
 import cohort46.gracebakeryapi.bakery.order.model.Order;
-import org.springframework.web.bind.annotation.PathVariable;
 
 public interface OrderService {
     OrderDto addOrder(OrderDto orderDto);
@@ -21,5 +20,5 @@ public interface OrderService {
     Iterable<OrderDto> findOrdersByProductId(Long product_id);
     Iterable<OrderDto> findOrderByAdressId(Long adress_id);
 
-    Order createCart(User user, Order order);
+    Order createCart(UserAccount user, Order order);
 }
