@@ -265,6 +265,13 @@ public class ServiceConfiguration {
             }
         });
 
+        modelMapper.addMappings(new PropertyMap<UserAccount, UserDto>() {
+            @Override
+            protected void configure() {
+                skip(destination.getPassword());
+            }
+        });
+
         modelMapper.addMappings(new PropertyMap<UserDto, UserAccount>() {
             protected void configure() {
                 using(new Converter<Long, RoleEnum>() {
