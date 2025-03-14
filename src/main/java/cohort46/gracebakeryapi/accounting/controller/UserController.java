@@ -28,19 +28,23 @@ public class UserController {
 
     //private final JwtUtil jwtUtil;
 ////////////////permit_all//////////////////
-    @PermitAll
     @PostMapping("/user/reg")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto addUser(@RequestBody UserDto userDto) {
         return userService.addUser(userDto)  ;
     }
 
-    @PermitAll
     @PostMapping("/user/login")
     public UserDto findUserByLogin(@RequestBody AuthorizationDto authorizationDto)//(@AuthenticationPrincipal UserDetailsImpl principal)
     {
         //principal = new UserDetailsImpl(userRepository.findUserByLogin(authorizationDto.getLogin()).orElseThrow(() -> new UserNotFoundException(  "such login" ))) ;
         return userService.userLogin(authorizationDto.getLogin(), authorizationDto.getPassword());
+    }
+
+    @GetMapping("/user/guest")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto addGuest() {
+        return null;//userService.addGuest()  ;
     }
 
     ////////////////user//////////////////

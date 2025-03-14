@@ -20,8 +20,8 @@ import java.util.Optional;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET_KEY = "your_secret_key_your_secret_key_your";
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24; // 24 часа
+    private static final String SECRET_KEY = "GraceBakeryAPI_SecretKey_For_JWTAuthorization_For_GraceBakeryProject";
+    private static final long EXPIRATION_TIME = (1000 * 60 * 60 * 24) * 7;
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
     public String createToken(UserDetailsImpl userDetails) {

@@ -80,8 +80,9 @@ public class UserServiceImpl implements UserService {
                 user.setCartId(orderRepository.saveAndFlush(order).getId());
                 user = userRepository.saveAndFlush(user);
 
-
-                return modelMapper.map(user, UserDto.class);
+                UserDto tempDto = modelMapper.map(user, UserDto.class) ;
+                tempDto.setToken(jwtUtil.createToken(new UserDetailsImpl(user)));
+                return tempDto;
             }
         }
          //*/

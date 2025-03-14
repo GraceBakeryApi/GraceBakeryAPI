@@ -87,8 +87,8 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     @Override
     public ProductDto updateProduct(ProductDto productDto, Long id) {
-        if(!checkSource(productDto)) throw new FailedDependencyException("Updating failed");
         productDto.setId(id);
+        if(!checkSource(productDto)) throw new FailedDependencyException("Updating failed");
         Product product = productRepository.findById(productDto.getId()).orElseThrow(() -> new ProductNotFoundException(  productDto.getId()   ));
 
         product.setIsActive(productDto.getIsActive());
@@ -279,8 +279,15 @@ public class ProductServiceImpl implements ProductService {
 
         if ((productDto.getCategoryid() != null) && categoryRepository.findById(productDto.getCategoryid()).isEmpty()) { return false; }
 
-        if(productRepository.findAll().stream().anyMatch( p -> p.getTitle_de().equals(productDto.getTitle_de()) ) ) { throw new FailedDependencyException("Title De must be uniq ") ;};
-        if(productRepository.findAll().stream().anyMatch( p -> p.getTitle_ru().equals(productDto.getTitle_ru()) ) ) { throw new FailedDependencyException("Title Ru must be uniq ") ;};
+        if(productRepository.findAll().stream().anyMatch( p -> (p.getTitle_de().equals(productDto.getTitle_de()) &&
+                !p.getId().equals(productDto.getId())  )  ) )
+        { throw new FailedDependencyException("Title De must be uniq ") ;};
+
+
+        if(productRepository.findAll().stream().anyMatch( p -> (p.getTitle_ru().equals(productDto.getTitle_ru()) &&
+                !p.getId().equals(productDto.getId())  )  ) )
+        { throw new FailedDependencyException("Title Ru must be uniq ") ;};
+
 
         for (ImageDto imageDto : productDto.getImages()) {
             if(imageRepository.findById(imageDto.getId()).isEmpty()) return false;

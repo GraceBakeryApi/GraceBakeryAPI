@@ -3,6 +3,7 @@ package cohort46.gracebakeryapi.accounting.security;
 import cohort46.gracebakeryapi.accounting.security.JWT.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -43,7 +44,16 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(
                         "/api/user/login",
-                        "/api/user/reg").permitAll()
+                        "/api/user/reg"
+                                ).permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/products/isactive/true",
+                                "/api/products/category/*/isactive/true",
+                                "/api/categories/section/*/isactive/true",
+                                "/api/categories/isactive/true",
+                                "/api/sections/isactive/true"
+                        ).permitAll()
+
 
                         .requestMatchers(
                                 "/api/**"

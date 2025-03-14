@@ -69,8 +69,8 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
     @Transactional
     @Override
     public BakeryoptionalDto updateBakeryoptional(BakeryoptionalDto bakeryoptionalDto, Long id) {
-        if(!checkSource(bakeryoptionalDto)) throw new FailedDependencyException("Updating failed");
         bakeryoptionalDto.setId(id);
+        if(!checkSource(bakeryoptionalDto)) throw new FailedDependencyException("Updating failed");
         Bakeryoptional bakeryoptional = bakeryoptionalRepository.findById(bakeryoptionalDto.getId()).orElseThrow(() -> new BakeryoptionalNotFoundException(  bakeryoptionalDto.getId()   ));
         bakeryoptionalDto.setImage(imageService.updateImageFileLink(bakeryoptionalDto.getImage(), bakeryoptional.getImage()));
 
@@ -140,10 +140,12 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
 
     private boolean checkSource(BakeryoptionalDto bakeryoptionalDto) {
 
-        if(bakeryoptionalRepository.findAll().stream().anyMatch( p -> p.getTitle_de().equals(bakeryoptionalDto.getTitle_de()) ) ) {
+        if(bakeryoptionalRepository.findAll().stream().anyMatch( p -> ( p.getTitle_de().equals(bakeryoptionalDto.getTitle_de())  &&
+                !p.getId().equals(bakeryoptionalDto.getId()  )  ) ) ) {
             throw new FailedDependencyException("Title De must be uniq ") ;};
 
-        if(bakeryoptionalRepository.findAll().stream().anyMatch( p -> p.getTitle_ru().equals(bakeryoptionalDto.getTitle_ru()) ) ) {
+        if(bakeryoptionalRepository.findAll().stream().anyMatch( p -> ( p.getTitle_ru().equals(bakeryoptionalDto.getTitle_ru())  &&
+                !p.getId().equals(bakeryoptionalDto.getId()  )  ) ) ) {
             throw new FailedDependencyException("Title Ru must be uniq ") ;};
 
         for (SizePrice sizePrice : bakeryoptionalDto.getSizeprices()) {

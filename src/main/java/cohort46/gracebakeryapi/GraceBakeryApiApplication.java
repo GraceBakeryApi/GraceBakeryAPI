@@ -11,7 +11,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+
+import org.springframework.cache.annotation.EnableCaching;
+
+
+
 @SpringBootApplication
+@EnableCaching
 public class GraceBakeryApiApplication {
 	private static boolean Init() {
 		Path path = Paths.get(GlobalVariables.getImagesPath());

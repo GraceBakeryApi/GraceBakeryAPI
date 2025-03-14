@@ -5,9 +5,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.util.Base64;
 
 public class SafeAESUtil {
-    private static final String SECRET_KEY = "MySecretAESKey16"; // ДОЛЖНО быть 16, 24 или 32 символа
+    private static final String SECRET_KEY = "GraceBakery_SKey";
 
-    // Шифрование строки
     public static String encrypt(String plainText) {
         try {
             SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
@@ -16,11 +15,10 @@ public class SafeAESUtil {
             byte[] encryptedBytes = cipher.doFinal(plainText.getBytes());
             return Base64.getEncoder().encodeToString(encryptedBytes);
         } catch (Exception e) {
-            return "ERROR"; // Всегда возвращаем строку, даже при сбое
+            return "ERROR";
         }
     }
 
-    // Дешифрование строки
     public static String decrypt(String encryptedText) {
         try {
             SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY.getBytes(), "AES");
@@ -29,23 +27,7 @@ public class SafeAESUtil {
             byte[] decodedBytes = Base64.getDecoder().decode(encryptedText);
             return new String(cipher.doFinal(decodedBytes));
         } catch (Exception e) {
-            return "ERROR"; // Всегда возвращаем строку, даже при ошибке
+            return "ERROR";
         }
     }
-/*
-    public static void main(String[] args) {
-        String originalText = "HelloWorld";
-
-        String encryptedText = encrypt(originalText); // Шифруем
-        String decryptedText = decrypt(encryptedText); // Дешифруем обратно
-
-        System.out.println("Исходный текст: " + originalText);
-        System.out.println("Зашифрованный текст: " + encryptedText);
-        System.out.println("Расшифрованный текст: " + decryptedText);
-
-        // Пример ошибки: расшифруем некорректные данные
-        System.out.println("Некорректные данные: " + decrypt("abcdef"));
-    }
-
- */
 }
