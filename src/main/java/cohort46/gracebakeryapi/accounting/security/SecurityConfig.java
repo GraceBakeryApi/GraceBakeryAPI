@@ -51,7 +51,10 @@ public class SecurityConfig {
                                 "/api/products/category/*/isactive/true",
                                 "/api/categories/section/*/isactive/true",
                                 "/api/categories/isactive/true",
-                                "/api/sections/isactive/true"
+                                "/api/sections/isactive/true",
+                                "/products/price/*",
+                                "/products/filters",  ///??????
+                                "/products/category/*"
                         ).permitAll()
 
 

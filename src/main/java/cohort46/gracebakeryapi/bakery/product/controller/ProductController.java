@@ -43,12 +43,12 @@ public class ProductController {
         return productService.findProductsByIsActive(isactive);
     }
 
-    @GetMapping("/products/category/{category_id}")
+    @GetMapping("/products/all/category/{category_id}")
     public Iterable<ProductDto> findProductsByCategory(@PathVariable Long category_id) {
         return productService.findProductsByCategory(category_id);
     }
 
-    @GetMapping("/gua/products/category/{category_id}")
+    @GetMapping("/products/category/{category_id}")
     public Iterable<ProductDto> findProductsByCategoryWithoutNoActive(@PathVariable Long category_id) {
         Set<ProductDto> productDtos = new HashSet<>();
         for(ProductDto temp : productService.findProductsByCategoryIdAndIsActive(category_id, true) )
