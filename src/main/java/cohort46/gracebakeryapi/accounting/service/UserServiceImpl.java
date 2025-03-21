@@ -4,6 +4,7 @@ import cohort46.gracebakeryapi.accounting.controller.UserController;
 import cohort46.gracebakeryapi.accounting.dao.UserRepository;
 import cohort46.gracebakeryapi.accounting.dto.ChangePasswordDto;
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
+import cohort46.gracebakeryapi.accounting.model.RoleEnum;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
 import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
@@ -114,8 +115,10 @@ public class UserServiceImpl implements UserService {
         long id = user.getId();
         user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(   id   ));
         String password = user.getPassword();
+        RoleEnum role = user.getRole();
         modelMapper.map(userDto, user);
         user.setPassword(password);
+        user.setRole(role);
         UserDto tempDto = modelMapper.map(userRepository.save(user), UserDto.class);
         tempDto.setToken(jwtUtil.createToken(new UserDetailsImpl(user)));
         return tempDto;
