@@ -2,6 +2,7 @@ package cohort46.gracebakeryapi.accounting.service;
 
 import cohort46.gracebakeryapi.accounting.controller.UserController;
 import cohort46.gracebakeryapi.accounting.dao.UserRepository;
+import cohort46.gracebakeryapi.accounting.dto.ChangePasswordDto;
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
@@ -110,12 +111,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto updateMe(UserDto userDto, UserAccount user) {
-        if(checkSource(userDto)){
-            userDto.setId(user.getId());
-            modelMapper.map(userDto, user);
-            return modelMapper.map(userRepository.save(user), UserDto.class);
-        }
-        return null;
+        long id = user.getId();
+        user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(   id   ));
+        String password = user.getPassword();
+        modelMapper.map(userDto, user);
+        user.setPassword(password);
+        UserDto tempDto = modelMapper.map(userRepository.save(user), UserDto.class);
+        tempDto.setToken(jwtUtil.createToken(new UserDetailsImpl(user)));
+        return tempDto;
     }
 
     @Override
@@ -174,13 +177,25 @@ public class UserServiceImpl implements UserService {
     @Override
     public void changeUserPassword(Long id, String password){
         //userRepository.findUserByLogin(login).orElseThrow(() -> new UserNotFoundException(  "login " + login )).setPassword(passwordEncoder.encode(password));
-        userRepository.findById(id).orElseThrow(() -> new UserNotFoundException( id )).setPassword(passwordEncoder.encode(password));
+        UserAccount user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException( id ));
+        user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
     }
 
     @Transactional
     @Override
-    public void changeMePassword(UserAccount user, String password){
-        user.setPassword(passwordEncoder.encode(password));
+    public void changeMePassword(UserAccount user, ChangePasswordDto changePasswordDto){
+        long id = user.getId();
+        user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(   id   ));
+
+        if(passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword()) ) {
+            user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+            userRepository.save(user);
+        }
+        else {
+            //throw new UserNotFoundException(  "connect error" );
+        }
+
     }
 
 

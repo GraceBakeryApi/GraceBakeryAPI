@@ -18,8 +18,8 @@ import java.util.Set;
 @EqualsAndHashCode(of = "id")
 @Entity
 @Table(name = "user")
-//@Cacheable
-//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,11 +2,13 @@ package cohort46.gracebakeryapi.accounting.controller;
 
 import cohort46.gracebakeryapi.accounting.dao.UserRepository;
 import cohort46.gracebakeryapi.accounting.dto.AuthorizationDto;
+import cohort46.gracebakeryapi.accounting.dto.ChangePasswordDto;
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
 //import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
 import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
 import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.accounting.service.UserService;
+import cohort46.gracebakeryapi.exception.UserNotFoundException;
 import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -50,14 +52,15 @@ public class UserController {
     ////////////////user//////////////////
 
     @PutMapping("/me/password")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeMePassword(@AuthenticationPrincipal UserDetailsImpl principal,  @RequestHeader("X-Password") String password) {
-        userService.changeMePassword(principal.getUser() , password);
+    //@ResponseStatus(HttpStatus.NO_CONTENT)
+    public void changeMePassword(@AuthenticationPrincipal UserDetailsImpl principal,  @RequestBody ChangePasswordDto changePasswordDto) {
+        userService.changeMePassword(principal.getUser() , changePasswordDto);
     }
 
     @GetMapping("/me")
     public UserDto getMe(@AuthenticationPrincipal UserDetailsImpl principal) {
-        return modelMapper.map(principal.getUser() , UserDto.class);
+        return  userService.findUserById(principal.getId());
+        //return modelMapper.map(principal.getUser() , UserDto.class);
     }
 
     @PatchMapping("/me")
@@ -71,66 +74,55 @@ public class UserController {
 
 
     ////////////////ADMIN//////////////////
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/{id}")
     public UserDto findUserById(@PathVariable Long id) {
         return userService.findUserById(id);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PatchMapping("/user/{id}")
     public UserDto updateUser( @RequestBody UserDto userDto, @PathVariable Long id) {
         return userService.updateUser(userDto, id);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/user/password/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void changeUserPassword( @RequestHeader("X-Password") String password, @PathVariable Long id) {
-        userService.changeUserPassword(id , password);
+    public void changeUserPassword( @PathVariable Long id, @RequestBody AuthorizationDto authorizationDto) {
+        userService.changeUserPassword(id , authorizationDto.getPassword());
     }
 
 
-
-
-
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users")
     public Iterable<UserDto> getUsersAll() {
         return userService.getUsersAll();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/phone/{phone}")
     public UserDto findUserByPhone(@PathVariable String phone) {
         return userService.findUserByPhone(phone);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/email/{email}")
     public UserDto findUserByEmail(@PathVariable String email) {
         return userService.findUserByEmail(email);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/firstname/{firstname}")
     public Iterable<UserDto> findUsersByFirstName(@PathVariable String firstname) {
         return userService.findUserByFirstName(firstname);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/lastname/{lastname}")
     public Iterable<UserDto> findUsersByLastName(@PathVariable String lastname) {
         return userService.findUserByLastName(lastname);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/users/birthdate/{birthdate}")
     public Iterable<UserDto> findUserByBirthdate(@PathVariable Long birthdate) {
         return userService.findUserByBirthdate(birthdate);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/order/{order_id}")
     public UserDto findUserByOrderById(@PathVariable Long order_id) {
         return userService.findUserByOrderById(order_id);
