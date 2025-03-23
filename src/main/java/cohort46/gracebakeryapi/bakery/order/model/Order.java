@@ -34,7 +34,8 @@ public class Order {
     private Set<Orderitem> orderitems = new HashSet<>();
 
     private Double total;
-    private String date;
+    private Long date;
+    private Long creatingdate;
 
     @ManyToOne
     private Address address;
