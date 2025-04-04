@@ -5,6 +5,7 @@ import cohort46.gracebakeryapi.helperclasses.SizePrice;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
+@Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BakeryoptionalDto {
     @NotNull

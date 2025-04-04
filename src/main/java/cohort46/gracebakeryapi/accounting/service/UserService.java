@@ -3,6 +3,7 @@ package cohort46.gracebakeryapi.accounting.service;
 import cohort46.gracebakeryapi.accounting.dto.ChangePasswordDto;
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.security.Principal;

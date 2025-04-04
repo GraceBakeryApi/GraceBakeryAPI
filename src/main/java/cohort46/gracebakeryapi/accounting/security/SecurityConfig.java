@@ -53,9 +53,15 @@ public class SecurityConfig {
                                 "/api/categories/isactive/true",
                                 "/api/sections/isactive/true",
                                 "/products/price/*",
-                                "/products/filters",  ///??????
+                                "/products/filters",
                                 "/products/category/*"
                         ).permitAll()
+
+                        .requestMatchers(
+                                "/users",
+                                "/user/*",
+                                "/user/*/*"
+                        ).hasRole("ADMIN")
 
 
                         .requestMatchers(

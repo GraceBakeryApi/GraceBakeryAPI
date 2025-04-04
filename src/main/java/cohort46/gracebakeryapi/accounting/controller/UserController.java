@@ -8,6 +8,7 @@ import cohort46.gracebakeryapi.accounting.dto.UserDto;
 import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
 import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.accounting.service.UserService;
+import cohort46.gracebakeryapi.exception.UserNotFoundException;
 import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

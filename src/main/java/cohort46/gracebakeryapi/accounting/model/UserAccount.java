@@ -16,10 +16,11 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
+@Builder
 @Entity
 @Table(name = "user")
-//@Cacheable
-//@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
