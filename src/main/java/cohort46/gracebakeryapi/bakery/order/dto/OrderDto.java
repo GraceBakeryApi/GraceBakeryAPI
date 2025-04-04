@@ -26,6 +26,7 @@ public class OrderDto {
     private Set<OrderitemDto> orderitems = new HashSet<>(); // Здесь можно добавить OrderitemDto, если нужно передавать данные об элементах заказа
     private Double total;
     private String date;
+    private Long creatingdate;
     private AddressDto address;
     @Setter
     private OrderStatusDto status;

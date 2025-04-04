@@ -1,10 +1,16 @@
 package cohort46.gracebakeryapi.bakery.order.controller;
 
+import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.bakery.image.dto.ImageDto;
 import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
 import cohort46.gracebakeryapi.bakery.order.service.OrderService;
+import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
+import cohort46.gracebakeryapi.helperclasses.OrdersStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,6 +23,12 @@ public class OrderController {
     public OrderDto addOrder(@RequestBody OrderDto orderDto) {
         return orderService.addOrder(orderDto)  ;
     }//Long
+
+    @RequestMapping(value = "/order/admin", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrderDto addOrderByAdmin(@RequestBody OrderDto orderDto, @RequestParam("e-mail") String mail, @RequestParam("phone") String phone) {
+        return orderService.addOrderByAdmin(orderDto, mail, phone)  ;
+    }
 
     @GetMapping("/order/{id}")
     public OrderDto findOrderById(@PathVariable Long id) {
@@ -53,6 +65,11 @@ public class OrderController {
         return orderService.patchOrderComment(id, comment);
     }
 
+    @PatchMapping("/order/{id}/viewed")
+    OrderDto patchOrderViewed(@PathVariable Long id){
+        return orderService.patchOrderStatus(id, "Viewed");
+    }
+
     @GetMapping("/orders/user/{user_id}")
     public Iterable<OrderDto> findOrdersByUser(@PathVariable Long user_id) {
         return orderService.findOrdersByUser(user_id);
@@ -66,6 +83,21 @@ public class OrderController {
     @GetMapping("/orders")
     public Iterable<OrderDto> getOrdersAll() {
         return orderService.getOrdersAll();
+    }
+
+    @GetMapping("/me/copyordertocart/{order_id}")
+    public OrderDto copyOrderToCart(@PathVariable Long order_id, @AuthenticationPrincipal UserDetailsImpl principal) {
+        return orderService.copyOrderToCart(order_id, principal);
+    }
+
+    @GetMapping("/me/cart")
+    public OrderDto getMyCart(@AuthenticationPrincipal UserDetailsImpl principal) {
+        return orderService.findOrderById(principal.getUser().getId());
+    }
+
+    @GetMapping("/me/orders")
+    public Iterable<OrderDto> getMyOrders(@AuthenticationPrincipal UserDetailsImpl principal) {
+        return orderService.findOrdersByUser(principal.getId());
     }
 
 

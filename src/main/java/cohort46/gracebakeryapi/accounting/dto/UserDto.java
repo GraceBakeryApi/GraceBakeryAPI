@@ -13,11 +13,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Getter
+@Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
     @NotNull
     @Setter
     private Long id;
+    @Setter
     private Long role_Id;
     private String login;
     private String password;

@@ -2,15 +2,18 @@ package cohort46.gracebakeryapi.accounting.service;
 
 import cohort46.gracebakeryapi.accounting.controller.UserController;
 import cohort46.gracebakeryapi.accounting.dao.UserRepository;
+import cohort46.gracebakeryapi.accounting.dto.ChangePasswordDto;
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
+import cohort46.gracebakeryapi.accounting.model.RoleEnum;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
 import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.bakery.order.dao.OrderRepository;
 import cohort46.gracebakeryapi.bakery.order.model.Order;
-import cohort46.gracebakeryapi.bakery.order.service.OrderServiceImpl;
+//import cohort46.gracebakeryapi.bakery.order.service.OrderServiceImpl;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.exception.FailedDependencyException;
+import cohort46.gracebakeryapi.exception.ForbiddenException;
 import cohort46.gracebakeryapi.exception.OrderNotFoundException;
 import cohort46.gracebakeryapi.exception.UserNotFoundException;
 import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
@@ -23,13 +26,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final OrderRepository orderRepository;
-    private final OrderServiceImpl orderServiceImpl;
+    //private final OrderServiceImpl orderServiceImpl;
     private UserController userController;
 
     private final UserRepository userRepository;
@@ -67,6 +73,7 @@ public class UserServiceImpl implements UserService {
         }
 
          */
+        userDto.setRole_Id((long) RoleEnum.USER.ordinal());
         if(checkSource(userDto)){
             UserAccount user = modelMapper.map(userDto, UserAccount.class);
             user.setId(null);
@@ -85,10 +92,10 @@ public class UserServiceImpl implements UserService {
                 return tempDto;
             }
         }
-         //*/
+        //*/
         return null;
     }
-//BCryptPasswordEncoder()
+    //BCryptPasswordEncoder()
     @Override
     public UserDto findUserById(Long userId) {
         UserAccount user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(  userId    ));
@@ -98,9 +105,9 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto updateUser(UserDto userDto, Long id) {
-        if(checkSource(userDto)){
+        UserAccount user = userRepository.findById(userDto.getId()).orElseThrow(() -> new UserNotFoundException(   userDto.getId()   ));
+        if( !user.getRole().equals(RoleEnum.ROOT) && checkSource(userDto)){
             userDto.setId(id);
-            UserAccount user = userRepository.findById(userDto.getId()).orElseThrow(() -> new UserNotFoundException(   userDto.getId()   ));
             modelMapper.map(userDto, user);
             return modelMapper.map(userRepository.save(user), UserDto.class);
         }
@@ -110,12 +117,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserDto updateMe(UserDto userDto, UserAccount user) {
-        if(checkSource(userDto)){
-            userDto.setId(user.getId());
-            modelMapper.map(userDto, user);
-            return modelMapper.map(userRepository.save(user), UserDto.class);
-        }
-        return null;
+        long id = user.getId();
+        user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(   id   ));
+        String password = user.getPassword();
+        RoleEnum role = user.getRole();
+        modelMapper.map(userDto, user);
+        user.setPassword(password);
+        user.setRole(role);
+        UserDto tempDto = modelMapper.map(userRepository.save(user), UserDto.class);
+        tempDto.setToken(jwtUtil.createToken(new UserDetailsImpl(user)));
+        return tempDto;
     }
 
     @Override
@@ -170,17 +181,44 @@ public class UserServiceImpl implements UserService {
                 .map(c -> modelMapper.map(c, UserDto.class)).toList() ;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     @Override
-    public void changeUserPassword(Long id, String password){
-        //userRepository.findUserByLogin(login).orElseThrow(() -> new UserNotFoundException(  "login " + login )).setPassword(passwordEncoder.encode(password));
-        userRepository.findById(id).orElseThrow(() -> new UserNotFoundException( id )).setPassword(passwordEncoder.encode(password));
+    public  List<UserDto> findUsersByRole(String role)
+    {
+        RoleEnum roleEnum;
+        try {
+            roleEnum = RoleEnum.valueOf(role);
+        } catch (IllegalArgumentException e) {
+            throw new ForbiddenException("bad status");
+        }
+        List<UserAccount> user = userRepository.findAll().stream().filter(u -> u.getRole().equals(roleEnum)).toList();
+        List<UserDto> userDtos = user.stream().map(c -> modelMapper.map(c, UserDto.class)).toList();
+        return userRepository.findAll().stream().filter(u -> u.getRole().equals(roleEnum)).map(c -> modelMapper.map(c, UserDto.class)).toList() ;
     }
 
     @Transactional
     @Override
-    public void changeMePassword(UserAccount user, String password){
+    public void changeUserPassword(Long id, String password){
+        //userRepository.findUserByLogin(login).orElseThrow(() -> new UserNotFoundException(  "login " + login )).setPassword(passwordEncoder.encode(password));
+        UserAccount user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException( id ));
         user.setPassword(passwordEncoder.encode(password));
+        userRepository.save(user);
+    }
+
+    @Transactional
+    @Override
+    public void changeMePassword(UserAccount user, ChangePasswordDto changePasswordDto){
+        long id = user.getId();
+        user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException(   id   ));
+
+        if(passwordEncoder.matches(changePasswordDto.getOldPassword(), user.getPassword()) ) {
+            user.setPassword(passwordEncoder.encode(changePasswordDto.getNewPassword()));
+            userRepository.save(user);
+        }
+        else {
+            //throw new UserNotFoundException(  "connect error" );
+        }
+
     }
 
 
@@ -192,6 +230,14 @@ public class UserServiceImpl implements UserService {
     }
 
     private boolean checkSource (UserDto userDto) {
+        if( !(
+                (userDto.getRole_Id() == (long) RoleEnum.GUEST.ordinal()) ||
+                        (userDto.getRole_Id() == (long) RoleEnum.USER.ordinal()) ||
+                        (userDto.getRole_Id() == (long) RoleEnum.ADMIN.ordinal()) ||
+                        (userDto.getRole_Id() == (long) RoleEnum.BLOCKED.ordinal())
+        ) ){
+            throw new FailedDependencyException("error ");
+        }
 
         if(userRepository.findUserByLogin(userDto.getLogin()).isPresent())  {
             throw new FailedDependencyException("Login must be uniq ") ;}

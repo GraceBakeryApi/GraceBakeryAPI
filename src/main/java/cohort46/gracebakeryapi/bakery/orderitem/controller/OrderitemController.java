@@ -15,7 +15,7 @@ public class OrderitemController {
     @PostMapping("/orderitem")
     @ResponseStatus(HttpStatus.CREATED)
     public OrderitemDto addOrderitem(@RequestBody OrderitemDto orderitemDto) {
-        return orderitemService.addOrderitem(orderitemDto)  ;
+        return orderitemService.addOrderitemDto(orderitemDto)  ;
     }
 
     @GetMapping("/orderitem/{id}")

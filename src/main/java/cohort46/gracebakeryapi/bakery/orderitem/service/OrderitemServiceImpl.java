@@ -55,7 +55,7 @@ public class OrderitemServiceImpl implements OrderitemService {
 
     @Transactional
     @Override
-    public OrderitemDto addOrderitem(OrderitemDto orderitemDto) {
+    public OrderitemDto addOrderitemDto(OrderitemDto orderitemDto) {
         if((orderitemDto.getOrderid() == null) || (orderRepository.findById(orderitemDto.getOrderid()).isEmpty())
                 || (checkSource(orderitemDto)) ) { throw new FailedDependencyException("Creation failed"); };
         Orderitem orderitem = modelMapper.map(orderitemDto, Orderitem.class);
@@ -69,6 +69,23 @@ public class OrderitemServiceImpl implements OrderitemService {
                 .getOrderitems().add(orderitem) ;
         return modelMapper.map(orderitem, OrderitemDto.class);
     }
+
+
+    @Transactional
+    @Override
+    public Orderitem addOrderitem(Orderitem sourcer_orderitem, Order order) {
+        Orderitem temp = new Orderitem();
+        temp.setId(null);
+        temp.setOrder(order);
+        temp.setProduct(sourcer_orderitem.getProduct());
+        temp.setIngredient(sourcer_orderitem.getIngredient());
+        temp.setSize(sourcer_orderitem.getSize());
+        temp.setBakeryoptionals(sourcer_orderitem.getBakeryoptionals());
+        temp.setQuantity(sourcer_orderitem.getQuantity());
+        temp.setCost(calcucateCost(sourcer_orderitem));
+        temp.setComment(sourcer_orderitem.getComment());
+        return orderitemRepository.saveAndFlush(temp);
+    };
 
 
 
@@ -106,7 +123,7 @@ public class OrderitemServiceImpl implements OrderitemService {
         //проверить статус order, удалять можно только заказ до состояния "в работе"
         if(  ( orderitem.getOrder() != null ) &&
                 ( orderitem.getOrder().getOrderstatus().getStatus() != OrdersStatusEnum.Cart ) &&
-                        ( orderitem.getOrder().getOrderstatus().getStatus() != OrdersStatusEnum.Created )
+                ( orderitem.getOrder().getOrderstatus().getStatus() != OrdersStatusEnum.Created )
         )  { throw new NotAcceptableException("Deletion is not available at this stage");  }
 
         orderitemRepository.delete(orderitem);
@@ -181,8 +198,10 @@ public class OrderitemServiceImpl implements OrderitemService {
 
         return true;
     };
-//*
+    //*
     private Double calcucateCost(Orderitem orderitem) {
+        if(!orderitem.getProduct().getIsActive()) { throw new FailedDependencyException("product is disabled"); }
+
         double cost = 0;
         Optional<Double> temp;
 
@@ -195,7 +214,7 @@ public class OrderitemServiceImpl implements OrderitemService {
         {
             temp = bo.getOptionsizes().stream().filter(os -> os.getSize().getId().equals(orderitem.getSize().getId())).
                     findFirst().map(Optionsize::getPrice) ;//temp = ценна очередной опции для этого размера, если этот размер относится к этой опции
-            if (temp.isPresent()) { cost = cost + temp.get(); }
+            if (temp.isPresent() && bo.getIsActive()) { cost = cost + temp.get(); }
             else { throw new FailedDependencyException("Creation failed, no size or price in option"); };
         }
 

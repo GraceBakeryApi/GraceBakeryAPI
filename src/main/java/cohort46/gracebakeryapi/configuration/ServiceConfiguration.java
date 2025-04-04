@@ -6,6 +6,7 @@ import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.bakery.address.dao.AddressRepository;
 import cohort46.gracebakeryapi.bakery.address.dto.AddressDto;
 import cohort46.gracebakeryapi.bakery.address.model.Address;
+import cohort46.gracebakeryapi.bakery.bakeryoptional.dao.BakeryoptionalRepository;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.model.Bakeryoptional;
 import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
@@ -14,6 +15,7 @@ import cohort46.gracebakeryapi.bakery.filter.dto.FilterDto;
 import cohort46.gracebakeryapi.bakery.filter.model.Filter;
 import cohort46.gracebakeryapi.bakery.image.dto.ImageDto;
 import cohort46.gracebakeryapi.bakery.image.model.Image;
+import cohort46.gracebakeryapi.bakery.ingredient.dao.IngredientRepository;
 import cohort46.gracebakeryapi.bakery.ingredient.dto.IngredientDto;
 import cohort46.gracebakeryapi.bakery.ingredient.model.Ingredient;
 import cohort46.gracebakeryapi.bakery.optionsize.dto.OptionsizeDto;
@@ -21,13 +23,16 @@ import cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize;
 import cohort46.gracebakeryapi.bakery.order.dao.OrderRepository;
 import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
 import cohort46.gracebakeryapi.bakery.order.model.Order;
+import cohort46.gracebakeryapi.bakery.orderitem.dto.OrderitemDto;
+import cohort46.gracebakeryapi.bakery.orderitem.model.Orderitem;
+import cohort46.gracebakeryapi.bakery.product.dao.ProductRepository;
 import cohort46.gracebakeryapi.bakery.product.dto.ProductDto;
 import cohort46.gracebakeryapi.bakery.product.model.Product;
 import cohort46.gracebakeryapi.bakery.productsize.dto.ProductsizeDto;
 import cohort46.gracebakeryapi.bakery.productsize.model.Productsize;
-import cohort46.gracebakeryapi.exception.AddressNotFoundException;
-import cohort46.gracebakeryapi.exception.FailedDependencyException;
-import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
+import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
+import cohort46.gracebakeryapi.bakery.size.model.Size;
+import cohort46.gracebakeryapi.exception.*;
 import cohort46.gracebakeryapi.helperclasses.*;
 import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
@@ -46,10 +51,18 @@ import java.util.Set;
 public class ServiceConfiguration {
     private final OrderRepository orderRepository;
     private final AddressRepository addressRepository;
+    private final BakeryoptionalRepository bakeryoptionalRepository;
+    private final ProductRepository productRepository;
+    private final SizeRepository sizeRepository;
+    private final IngredientRepository ingredientRepository;
 
-    public ServiceConfiguration(OrderRepository orderRepository, AddressRepository addressRepository) {
+    public ServiceConfiguration(OrderRepository orderRepository, AddressRepository addressRepository, BakeryoptionalRepository bakeryoptionalRepository, ProductRepository productRepository, SizeRepository sizeRepository, IngredientRepository ingredientRepository) {
         this.orderRepository = orderRepository;
         this.addressRepository = addressRepository;
+        this.bakeryoptionalRepository = bakeryoptionalRepository;
+        this.productRepository = productRepository;
+        this.sizeRepository = sizeRepository;
+        this.ingredientRepository = ingredientRepository;
     }
 
 
@@ -65,6 +78,97 @@ public class ServiceConfiguration {
         modelMapper.getConfiguration()
                 .setMatchingStrategy(MatchingStrategies.STRICT) // Можно использовать STANDARD или LOOSE
                 .setSkipNullEnabled(true); // Игнорировать null-поля
+
+
+
+        /***************Orderitem*************/
+        // Создаем маппинг для OrderitemDto -> Orderitem
+        modelMapper.addMappings(new PropertyMap<Orderitem, OrderitemDto>() {
+            @Override
+            protected void configure() {
+                // маппинг полей с разными именами
+                map(source.getOrder().getId(), destination.getOrderid());
+                map(source.getProduct().getId(), destination.getProductid());
+                map(source.getSize().getId(), destination.getSizeid());
+                map(source.getIngredient().getId(), destination.getIngredientid());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<Orderitem, OrderitemDto>() {
+            protected void configure() {
+                using(new Converter<Set<Bakeryoptional>, Set<BakeryoptionalDto>>() {
+                    public Set<BakeryoptionalDto> convert(MappingContext<Set<Bakeryoptional>, Set<BakeryoptionalDto>> context) {
+                        Set<BakeryoptionalDto> bakeryoptionalDtoSet = new HashSet<>();
+                        for (Bakeryoptional bakeryoptional : context.getSource()) {
+                            bakeryoptionalDtoSet.add( modelMapper.map(bakeryoptional, BakeryoptionalDto.class));
+                            /*
+                            BakeryoptionalDto.builder()
+                                    .id(bakeryoptional.getId())
+                                    .title_de(bakeryoptional.getTitle_de())
+                                    .title_ru(bakeryoptional.getTitle_ru())
+                                    .description_de( bakeryoptional.getDescription_de())
+                             */
+                        }
+                        return bakeryoptionalDtoSet;
+                    };
+                }).map(source.getBakeryoptionals(), destination.getBakeryoptionals());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<OrderitemDto, Orderitem>() {
+            protected void configure() {
+                using(new Converter<Set<BakeryoptionalDto>, Set<Bakeryoptional>>() {
+                    public Set<Bakeryoptional> convert(MappingContext<Set<BakeryoptionalDto>, Set<Bakeryoptional>> context) {
+                        Set<Bakeryoptional> bakeryoptionalSet = new HashSet<>();
+                        for (BakeryoptionalDto bakeryoptionalDto : context.getSource()) {
+                            bakeryoptionalSet.add( bakeryoptionalRepository.findById(bakeryoptionalDto.getId())
+                                    .orElseThrow(() -> new BakeryoptionalNotFoundException(bakeryoptionalDto.getId())));
+                        }
+                        return bakeryoptionalSet;
+                    };
+                }).map(source.getBakeryoptionals(), destination.getBakeryoptionals());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<OrderitemDto, Orderitem>() {
+            protected void configure() {
+                using(new Converter<Long, Order>() {
+                    public Order convert(MappingContext<Long, Order> context) {
+                        return orderRepository.findById(context.getSource()).orElseThrow(() -> new OrderNotFoundException(context.getSource()));
+                    }
+                }).map(source.getOrderid(), destination.getOrder());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<OrderitemDto, Orderitem>() {
+            protected void configure() {
+                using(new Converter<Long, Product>() {
+                    public Product convert(MappingContext<Long, Product> context) {
+                        return productRepository.findById(context.getSource()).orElseThrow(() -> new ProductNotFoundException(context.getSource()));
+                    }
+                }).map(source.getProductid(), destination.getProduct());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<OrderitemDto, Orderitem>() {
+            protected void configure() {
+                using(new Converter<Long, Size>() {
+                    public Size convert(MappingContext<Long, Size> context) {
+                        return sizeRepository.findById(context.getSource()).orElseThrow(() -> new SizeNotFoundException(context.getSource()));
+                    }
+                }).map(source.getSizeid(), destination.getSize());
+            }
+        });
+
+        modelMapper.addMappings(new PropertyMap<OrderitemDto, Orderitem>() {
+            protected void configure() {
+                using(new Converter<Long, Ingredient>() {
+                    public Ingredient convert(MappingContext<Long, Ingredient> context) {
+                        return ingredientRepository.findById(context.getSource()).orElseThrow(() -> new IngredientNotFoundException(context.getSource()));
+                    }
+                }).map(source.getIngredientid(), destination.getIngredient());
+            }
+        });
 
 
         /***************Category*************/
@@ -293,7 +397,19 @@ public class ServiceConfiguration {
             protected void configure() {
                 using(new Converter<Long, OrderDto>() {
                     public OrderDto convert(MappingContext<Long, OrderDto> context) {
-                        return modelMapper.map(orderRepository.findById(context.getSource()).orElse(null) , OrderDto.class) ;
+                        if(context.getSource() != null)
+                        {
+                            Order temp = orderRepository.findById(context.getSource()).orElse(null);
+                            if(temp == null){
+                                return null;
+                            }
+                            else {
+                                return modelMapper.map( temp , OrderDto.class) ;
+                                //return modelMapper.map(orderRepository.findById(context.getSource()).orElseThrow(() -> new OrderNotFoundException(context.getSource())) , OrderDto.class) ;
+                            }
+                        }
+                        else return null;
+
                     }
                 }).map(source.getCartId(), destination.getCart());
             }
