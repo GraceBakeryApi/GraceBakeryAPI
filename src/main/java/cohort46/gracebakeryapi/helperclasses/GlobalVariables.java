@@ -1,7 +1,10 @@
 package cohort46.gracebakeryapi.helperclasses;
 
+import cohort46.gracebakeryapi.accounting.dao.UserRepository;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import lombok.Getter;
 import org.modelmapper.internal.util.Lists;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +15,9 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Component
 public class GlobalVariables {
-    private static final GlobalVariables instance = new GlobalVariables();
+    //private static final GlobalVariables instance = new GlobalVariables();
 
     private GlobalVariables() {
         //statusList.add(new OrderStatus(OrdersStatusEnum.Cart, "Cart", "Карзина"));

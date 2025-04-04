@@ -3,8 +3,11 @@ package cohort46.gracebakeryapi.bakery.order.service;
 //import cohort46.gracebakeryapi.bakery.order.controller.OrderController;
 
 import cohort46.gracebakeryapi.accounting.dao.UserRepository;
+import cohort46.gracebakeryapi.accounting.dto.UserDto;
+import cohort46.gracebakeryapi.accounting.model.RoleEnum;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.accounting.service.UserService;
 import cohort46.gracebakeryapi.bakery.address.dao.AddressRepository;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dao.BakeryoptionalRepository;
 import cohort46.gracebakeryapi.bakery.filter.dao.FilterRepository;
@@ -16,11 +19,13 @@ import cohort46.gracebakeryapi.bakery.orderitem.dao.OrderitemRepository;
 import cohort46.gracebakeryapi.bakery.orderitem.dto.OrderitemDto;
 import cohort46.gracebakeryapi.bakery.orderitem.model.Orderitem;
 import cohort46.gracebakeryapi.bakery.orderitem.service.OrderitemService;
+import cohort46.gracebakeryapi.bakery.orderitem.service.OrderitemServiceImpl;
 import cohort46.gracebakeryapi.bakery.product.dao.ProductRepository;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.exception.*;
 import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
 import cohort46.gracebakeryapi.helperclasses.OrderStatus;
+import cohort46.gracebakeryapi.helperclasses.OrderStatusDto;
 import cohort46.gracebakeryapi.helperclasses.OrdersStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,10 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -52,6 +54,8 @@ public class OrderServiceImpl implements OrderService {
     private final BakeryoptionalRepository bakeryoptionalRepository;
 
     private final OrderitemService orderitemService;
+    private final UserService userService;
+    private final OrderitemServiceImpl orderitemServiceImpl;
 
 
     @Transactional
@@ -64,7 +68,56 @@ public class OrderServiceImpl implements OrderService {
 
     @Transactional
     @Override
+    public OrderDto addOrderByAdmin(OrderDto orderDto, String mail, String phone) {
+        Optional<UserAccount> userOptional = userRepository.findUserByEmail(mail);
+        if (userOptional.isEmpty()) {
+            userOptional = userRepository.findAll().stream()
+                    .filter(u -> u.getPhone().contains(phone.substring(1))) //remoove '0' or '+'
+                    .findFirst();
+            if (userOptional.isEmpty()){
+                UserDto userDto = UserDto.builder()
+                        .login("user_" + Instant.now().toEpochMilli())
+                        .password("user")
+                        .email(mail)
+                        .phone(phone)
+                        .role_Id((long)RoleEnum.GUEST.ordinal())
+                        .birthdate(0)
+                        .build();
+                userOptional = userRepository.findById(userService.addUser(userDto).getId());
+            }
+        }
+
+        orderDto.setStatus(OrderStatusDto.builder()
+                .statusRu(GlobalVariables.getStatusList().get(OrdersStatusEnum.Created.ordinal()).getStatusRu())
+                .statusDe(GlobalVariables.getStatusList().get(OrdersStatusEnum.Created.ordinal()).getStatusDe()).
+                build());
+
+        orderDto.setUserId(userOptional.get().getId());
+        return modelMapper.map(createOrder(orderDto), OrderDto.class);
+    }
+
+    @Transactional
+    @Override
     public Order storeOrder(Order order) {
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    @Override
+    public Order createOrder(OrderDto orderDto) {
+        Set<OrderitemDto> orderitemDtoSet = orderDto.getOrderitems();
+        orderDto.getOrderitems().clear();
+        Order order = modelMapper.map(orderDto, Order.class);
+        order.getOrderitems().clear();
+        orderRepository.saveAndFlush(order);
+
+        for(OrderitemDto orderitemDto:orderitemDtoSet)
+        {
+            Orderitem orderitem = orderitemRepository.findById(orderitemService.addOrderitemDto(orderitemDto).getId())
+                    .orElseThrow(() -> new OrderitemNotFoundException(orderitemDto.getId()));
+            order.getOrderitems().add(orderitem);
+            orderRepository.saveAndFlush(order);
+        }
         return orderRepository.save(order);
     }
 
@@ -233,7 +286,9 @@ public class OrderServiceImpl implements OrderService {
         Order cart = orderRepository.findById(principal.getUser().getCartId()).orElseThrow(() -> new OrderNotFoundException(principal.getUser().getCartId()));
 
         for(Orderitem orderitem : order.getOrderitems()) {
-            if(orderitem.getProduct().getIsActive()) {
+            if(orderitem.getProduct().getIsActive())  {
+                ///////////////////
+                //orderitem.getIngredient().getIsActive() && orderitem.getProduct().getIngredients()
                 cart.getOrderitems().add(orderitemService.addOrderitem(orderitem, cart));
             }
         }

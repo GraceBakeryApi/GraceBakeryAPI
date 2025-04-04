@@ -1,6 +1,7 @@
 package cohort46.gracebakeryapi.bakery.order.controller;
 
 import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.bakery.image.dto.ImageDto;
 import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
 import cohort46.gracebakeryapi.bakery.order.service.OrderService;
 import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +23,12 @@ public class OrderController {
     public OrderDto addOrder(@RequestBody OrderDto orderDto) {
         return orderService.addOrder(orderDto)  ;
     }//Long
+
+    @RequestMapping(value = "/order/admin", method = RequestMethod.POST)
+    @ResponseStatus(HttpStatus.CREATED)
+    public OrderDto addOrderByAdmin(@RequestBody OrderDto orderDto, @RequestParam("e-mail") String mail, @RequestParam("phone") String phone) {
+        return orderService.addOrderByAdmin(orderDto, mail, phone)  ;
+    }
 
     @GetMapping("/order/{id}")
     public OrderDto findOrderById(@PathVariable Long id) {

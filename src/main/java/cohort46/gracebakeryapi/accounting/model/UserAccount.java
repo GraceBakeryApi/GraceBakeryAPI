@@ -16,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
+@Builder
 @Entity
 @Table(name = "user")
 @Cacheable

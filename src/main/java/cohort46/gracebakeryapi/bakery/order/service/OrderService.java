@@ -7,11 +7,14 @@ import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
 import cohort46.gracebakeryapi.bakery.order.model.Order;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 public interface OrderService {
     OrderDto addOrder(OrderDto orderDto);
+    OrderDto addOrderByAdmin(OrderDto orderDto, String mail, String phone);
     OrderDto copyOrderToCart(Long order_id, UserDetailsImpl principal);
     Order storeOrder(Order order);
+    Order createOrder(OrderDto orderDto);
     //OrderDto patchOrderViewed(Long id);
     OrderDto findOrderById(Long order_id);
     OrderDto updateOrder(OrderDto orderDto, Long id);

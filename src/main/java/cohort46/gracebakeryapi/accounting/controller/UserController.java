@@ -98,6 +98,11 @@ public class UserController {
         return userService.getUsersAll();
     }
 
+    @GetMapping("/users/{role}")
+    public Iterable<UserDto> getUsersByRole(@PathVariable String role) {
+        return userService.findUsersByRole(role);
+    }
+
     @GetMapping("/user/phone/{phone}")
     public UserDto findUserByPhone(@PathVariable String phone) {
         return userService.findUserByPhone(phone);
