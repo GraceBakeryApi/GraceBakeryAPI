@@ -86,6 +86,8 @@ public class OrderServiceImpl implements OrderService {
             }
         }
 
+        //////////
+
         OrderStatusDto orderStatusDto = new OrderStatusDto();
         orderStatusDto.setStatusDe(GlobalVariables.getStatusList().get(OrdersStatusEnum.Created.ordinal()).getStatusDe());
         orderStatusDto.setStatusRu(GlobalVariables.getStatusList().get(OrdersStatusEnum.Created.ordinal()).getStatusRu());
