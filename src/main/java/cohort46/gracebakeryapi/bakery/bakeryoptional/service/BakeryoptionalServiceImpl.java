@@ -77,6 +77,7 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
         Iterable<Optionsize> ops = bakeryoptional.getOptionsizes();
 
         bakeryoptional.getOptionsizes().clear();
+        //bakeryoptionalRepository.saveAndFlush(bakeryoptional);
         for(Optionsize opstemp : ops){
 
             optionsizeService.deleteOptionsize(opstemp.getId());
@@ -105,6 +106,8 @@ public class BakeryoptionalServiceImpl implements BakeryoptionalService {
                 optionsize = optionsizeService.store(optionsize);
                 bakeryoptional.getOptionsizes().add(optionsize);
             }
+
+            if(bakeryoptional.getOptionsizes().isEmpty()) {bakeryoptional.setIsActive(false);}
         }
         return modelMapper.map(bakeryoptionalRepository.save(bakeryoptional), BakeryoptionalDto.class);
     }

@@ -92,7 +92,7 @@ public class OrderController {
 
     @GetMapping("/me/cart")
     public OrderDto getMyCart(@AuthenticationPrincipal UserDetailsImpl principal) {
-        return orderService.findOrderById(principal.getUser().getId());
+        return orderService.findOrderById(principal.getUser().getCartId());
     }
 
     @GetMapping("/me/orders")

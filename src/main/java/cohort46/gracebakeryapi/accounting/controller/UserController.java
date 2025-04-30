@@ -44,7 +44,7 @@ public class UserController {
         return userService.userLogin(authorizationDto.getLogin(), authorizationDto.getPassword());
     }
 
-    @GetMapping("/user/guest")
+    @PostMapping("/user/guest")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto addGuest() {
         return null;//userService.addGuest()  ;

@@ -10,6 +10,7 @@ import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.accounting.service.UserService;
 import cohort46.gracebakeryapi.bakery.address.dao.AddressRepository;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dao.BakeryoptionalRepository;
+import cohort46.gracebakeryapi.bakery.bakeryoptional.model.Bakeryoptional;
 import cohort46.gracebakeryapi.bakery.filter.dao.FilterRepository;
 import cohort46.gracebakeryapi.bakery.ingredient.dao.IngredientRepository;
 import cohort46.gracebakeryapi.bakery.order.dao.OrderRepository;
@@ -21,7 +22,9 @@ import cohort46.gracebakeryapi.bakery.orderitem.model.Orderitem;
 import cohort46.gracebakeryapi.bakery.orderitem.service.OrderitemService;
 import cohort46.gracebakeryapi.bakery.orderitem.service.OrderitemServiceImpl;
 import cohort46.gracebakeryapi.bakery.product.dao.ProductRepository;
+import cohort46.gracebakeryapi.bakery.productsize.model.Productsize;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
+import cohort46.gracebakeryapi.bakery.size.model.Size;
 import cohort46.gracebakeryapi.exception.*;
 import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
 import cohort46.gracebakeryapi.helperclasses.OrderStatus;
@@ -282,32 +285,53 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto copyOrderToCart(Long order_id, UserDetailsImpl principal){
         //principal.getUser().getOrders().stream().noneMatch(order -> order.getId().equals(order_id));
         Order order = orderRepository.findById(order_id).orElseThrow(() -> new OrderNotFoundException(order_id));
-        if(order.getUser().getId().equals(principal.getUser().getId())) {throw new OrderNotFoundException(order_id);}
+        if(!order.getUser().getId().equals(principal.getUser().getId())) {throw new OrderNotFoundException(order_id);}
 
         Order cart = orderRepository.findById(principal.getUser().getCartId()).orElseThrow(() -> new OrderNotFoundException(principal.getUser().getCartId()));
 
         for(Orderitem orderitem : order.getOrderitems()) {
-            if(orderitem.getProduct().getIsActive())  {
-                ///////////////////
-                //orderitem.getIngredient().getIsActive() && orderitem.getProduct().getIngredients()
-                cart.getOrderitems().add(orderitemService.addOrderitem(orderitem, cart));
+            // very important to Product of the orderitem with general fetcher(Ingredient) should be ordered
+            if(orderitem.getProduct().getIsActive()  //the Product must be actuality active
+                    && orderitem.getIngredient().getIsActive() //the Ingredient must be actuality active
+                    && (orderitem.getProduct().getProductsizes() != null && !orderitem.getProduct().getProductsizes().isEmpty())//currently the Product have any size
+                    && orderitem.getProduct().getIngredients().stream().anyMatch( i -> i.getId().equals( orderitem.getIngredient().getId() ) ) //actuality the Product must have this Ingredient
+            )
+            {
+                Size size = orderitem.getSize();
+                if(  !orderitem.getSize().getIsActive() ||  orderitem.getProduct().getProductsizes().stream() // is the Product actuality has size whith is size of the orderitem
+                        .noneMatch(ps -> ps.getSize().getId().equals(orderitem.getSize().getId()))  ) //if not - find nearest size
+                {
+                    size = orderitem.getProduct().getProductsizes().stream()
+                            .filter(p -> p.getSize() != null)
+                            .min(Comparator.comparingDouble(p -> Math.abs(p.getSize().getMass() - orderitem.getSize().getMass())))
+                            .map(Productsize::getSize)
+                            .orElse(orderitem.getSize());
+                };
+
+                //orderitem.getBakeryoptionals().stream().anyMatch(bo -> bo.getOptionsizes().stream().anyMatch(os -> os.getSize().getId().equals(size.getId())))) ) {};
+
+                Orderitem orderitemTemp = modelMapper.map(orderitem, Orderitem.class);
+                orderitemTemp.setSize(size);
+
+                orderitemTemp.getBakeryoptionals().clear();//заполнить актуальными
+                Long sizeId = size.getId();
+                for(Bakeryoptional bakeryoptional : orderitem.getBakeryoptionals()) { //get each bakeryoptional of list of bakeryoptionals from orderitem
+                    if( bakeryoptional.getIsActive() && //is this bakeryoptional actuality active
+                            (bakeryoptional.getOptionsizes() != null) && !bakeryoptional.getOptionsizes().isEmpty() &&
+                            bakeryoptional.getOptionsizes().stream().anyMatch(os -> os.getSize().getId().equals(sizeId)) //is product from orderitem actuality has this bakeryoptional
+                    )
+                    {
+                        orderitemTemp.getBakeryoptionals().add(bakeryoptional);
+                    }
+                }
+                cart.getOrderitems().add(orderitemService.addOrderitem(orderitemTemp, cart));
             }
         }
-        return (modelMapper.map(orderRepository.save(order), OrderDto.class));
+        return (modelMapper.map(orderRepository.save(cart), OrderDto.class));
     };
 
 
 }
-
-/*
-Order order = new Order();//создаем корзину для создаваемого user
-            order.setUser(user);
-            order.setOrderstatus(GlobalVariables.getStatusList().get(OrdersStatusEnum.Cart.ordinal()));
-            user.getOrders().add(order);
-            user.setCartId(orderRepository.saveAndFlush(order).getId());
-            user = userRepository.saveAndFlush(user);
-            return modelMapper.map(user, UserDto.class);
- */
 
 
 /*
