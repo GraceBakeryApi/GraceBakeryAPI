@@ -105,6 +105,4 @@ public class OrderController {
     public Iterable<OrderDto> getMyOrders(@AuthenticationPrincipal UserDetailsImpl principal) {
         return orderService.findOrdersByUser(principal.getId());
     }
-
-
 }
