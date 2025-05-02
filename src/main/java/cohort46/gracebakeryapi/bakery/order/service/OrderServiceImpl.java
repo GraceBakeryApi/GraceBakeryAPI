@@ -330,6 +330,46 @@ public class OrderServiceImpl implements OrderService {
         return (modelMapper.map(orderRepository.save(cart), OrderDto.class));
     };
 
+    @Transactional
+    @Override
+    public OrderDto mergeCartfromGuest(Long guest_id, UserDetailsImpl principal){
+        UserAccount guest = userRepository.findById(guest_id).orElseThrow(() -> new UserNotFoundException(guest_id));
+        Order guestCart = orderRepository.findById(guest.getCartId()).orElseThrow(() -> new OrderNotFoundException(guest.getCartId()));
+        Order userCart = createCart(principal.getUser(), new Order());
+        Set<Orderitem> orderitemsTemp = new HashSet<>(guestCart.getOrderitems());
+        guestCart.getOrderitems().clear();
+        userCart.setComment(guestCart.getComment());
+        orderRepository.saveAndFlush(guestCart);
+        for(Orderitem orderitem : orderitemsTemp ){
+           orderitem.setOrder(userCart);
+           orderitemRepository.saveAndFlush(orderitem);
+           userCart.getOrderitems().add(orderitem);
+           orderRepository.saveAndFlush(userCart);
+        }
+        return (modelMapper.map(userCart, OrderDto.class));
+    }
+
+    @Transactional
+    @Override
+    public OrderDto replaceCartfromGuest(Long guest_id, UserDetailsImpl principal){
+        UserAccount guest = userRepository.findById(guest_id).orElseThrow(() -> new UserNotFoundException(guest_id));
+        Order guestCart = orderRepository.findById(guest.getCartId()).orElseThrow(() -> new OrderNotFoundException(guest.getCartId()));
+        Order userCart = createCart(principal.getUser(), new Order());
+        userCart.getOrderitems().clear();
+        userCart.setComment(guestCart.getComment());
+        orderRepository.saveAndFlush(userCart);
+        Set<Orderitem> orderitemsTemp = new HashSet<>(guestCart.getOrderitems());
+        guestCart.getOrderitems().clear();
+        orderRepository.saveAndFlush(guestCart);
+        for(Orderitem orderitem : orderitemsTemp ){
+            orderitem.setOrder(userCart);
+            orderitemRepository.saveAndFlush(orderitem);
+            userCart.getOrderitems().add(orderitem);
+            orderRepository.saveAndFlush(userCart);
+        }
+        return (modelMapper.map(userCart, OrderDto.class));
+    }
+
 
 }
 

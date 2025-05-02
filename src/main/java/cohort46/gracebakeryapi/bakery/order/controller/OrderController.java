@@ -90,6 +90,16 @@ public class OrderController {
         return orderService.copyOrderToCart(order_id, principal);
     }
 
+    @GetMapping("/me/mergecartfromguest/{guest_id}")
+    public OrderDto mergeCartfromGuest(@PathVariable Long guest_id, @AuthenticationPrincipal UserDetailsImpl principal) {
+        return orderService.mergeCartfromGuest(guest_id, principal);
+    }
+
+    @GetMapping("/me/replacecartfromguest/{guest_id}")
+    public OrderDto replaceCartfromGuest(@PathVariable Long guest_id, @AuthenticationPrincipal UserDetailsImpl principal) {
+        return orderService.replaceCartfromGuest(guest_id, principal);
+    }
+
     @GetMapping("/me/cart")
     public OrderDto getMyCart(@AuthenticationPrincipal UserDetailsImpl principal) {
         return orderService.findOrderById(principal.getUser().getCartId());

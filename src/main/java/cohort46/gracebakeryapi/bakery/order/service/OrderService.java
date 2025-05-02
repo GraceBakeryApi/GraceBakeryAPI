@@ -28,6 +28,7 @@ public interface OrderService {
     Iterable<OrderDto> getOrdersTotalAll();
     Iterable<OrderDto> findOrdersByProductId(Long product_id);
     Iterable<OrderDto> findOrderByAdressId(Long adress_id);
-
+    OrderDto mergeCartfromGuest(Long guest_id, UserDetailsImpl principal);
+    OrderDto replaceCartfromGuest(Long guest_id, UserDetailsImpl principal);
     Order createCart(UserAccount user, Order order);
 }

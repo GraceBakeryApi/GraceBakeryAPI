@@ -304,7 +304,15 @@ public class ServiceConfiguration {
         });
 
         /***************Order************/
-
+        // Создаем маппинг для Order -> Order
+        modelMapper.addMappings(new PropertyMap<Order, Order>() {
+            @Override
+            protected void configure() {
+                skip(destination.getOrderstatus() );
+                skip(destination.getOrderitems() );
+            }
+        });
+        // Создаем маппинг для Order -> OrderDto
         modelMapper.addMappings(new PropertyMap<Order, OrderDto>() {
             @Override
             protected void configure() {
