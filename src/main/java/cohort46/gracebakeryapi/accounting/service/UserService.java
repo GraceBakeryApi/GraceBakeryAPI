@@ -27,4 +27,5 @@ public interface UserService {
     Iterable<UserDto> findUserByFirstName(String firstname);
     Iterable<UserDto> findUserByLastName(String lastname);
     List<UserDto> findUsersByRole(String role);
+    UserDto addGuest();
 }

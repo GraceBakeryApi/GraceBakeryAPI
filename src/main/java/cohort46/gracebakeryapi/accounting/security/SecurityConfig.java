@@ -48,20 +48,23 @@ public class SecurityConfig {
                                 ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/products/isactive/true",
+                                "/products/*",
                                 "/api/products/category/*/isactive/true",
+                                "/api/products/price/*/*",
+                                "/api/products/filters",
+                                "/api/products/category/*",
                                 "/api/categories/section/*/isactive/true",
                                 "/api/categories/isactive/true",
-                                "/api/sections/isactive/true",
-                                "/products/price/*",
-                                "/products/filters",
-                                "/products/category/*"
-                        ).permitAll()
+                                "/api/sections/isactive/true"
+
+                                ).permitAll()
 
                         .requestMatchers(
                                 "/users",
                                 "/user/*",
-                                "/user/*/*"
-                        ).hasRole("ADMIN")
+                                "/user/*/*",
+                                "/products/isactive/true"
+                        ).hasAnyRole("ADMIN", "ROOT")
 
 
                         .requestMatchers(

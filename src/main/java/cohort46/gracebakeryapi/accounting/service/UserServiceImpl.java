@@ -26,10 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -80,13 +77,13 @@ public class UserServiceImpl implements UserService {
             user.setPassword(passwordEncoder.encode(userDto.getPassword())); //BCrypt.hashpw(userDto.getPassword(), BCrypt.gensalt()));
             user = userRepository.saveAndFlush(user);
             if(user != null) {
-                Order order = new Order();//создаем корзину для создаваемого user
-                order.setUser(user);
-                order.setOrderstatus(GlobalVariables.getStatusList().get(OrdersStatusEnum.Cart.ordinal()));
-                user.getOrders().add(order);
-                user.setCartId(orderRepository.saveAndFlush(order).getId());
+                Order cart = new Order();//создаем корзину для создаваемого user
+                cart.setUser(user);
+                cart.setOrderstatus(GlobalVariables.getStatusList().get(OrdersStatusEnum.Cart.ordinal()));
+                orderRepository.saveAndFlush(cart);
+                user.getOrders().add(cart);
+                user.setCartId(orderRepository.saveAndFlush(cart).getId());
                 user = userRepository.saveAndFlush(user);
-
                 UserDto tempDto = modelMapper.map(user, UserDto.class) ;
                 tempDto.setToken(jwtUtil.createToken(new UserDetailsImpl(user)));
                 return tempDto;
@@ -95,7 +92,41 @@ public class UserServiceImpl implements UserService {
         //*/
         return null;
     }
-    //BCryptPasswordEncoder()
+
+    @Transactional
+    @Override
+    public UserDto addGuest()
+    {
+        UserAccount guest = UserAccount.builder()
+                .id(null)
+                .login("Name-" + java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd")) + "_" + String.format("%03d", new java.util.Random().nextInt(1000)))
+                .password("")
+                .email(null)
+                .role(RoleEnum.GUEST)
+                .addresses(new HashSet<>())
+                .firstName(null)
+                .lastName(null)
+                .phone(null)
+                .cartId(null)
+                .build();
+
+        guest = userRepository.saveAndFlush(guest);
+        if(guest != null) {
+            Order cart = new Order();//создаем корзину для создаваемого guest
+            cart.setId(null);
+            cart.setUser(guest);
+            cart.setOrderstatus(GlobalVariables.getStatusList().get(OrdersStatusEnum.Cart.ordinal()));
+            orderRepository.saveAndFlush(cart);
+            guest.getOrders().add(cart);
+            guest.setCartId(orderRepository.saveAndFlush(cart).getId());
+            guest = userRepository.saveAndFlush(guest);
+            UserDto tempDto = modelMapper.map(guest, UserDto.class) ;
+            tempDto.setToken(jwtUtil.createToken(new UserDetailsImpl(guest)));
+            return tempDto;
+        }
+        else {return null;}
+    };
+
     @Override
     public UserDto findUserById(Long userId) {
         UserAccount user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(  userId    ));
