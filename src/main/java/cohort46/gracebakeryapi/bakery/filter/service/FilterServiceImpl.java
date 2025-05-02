@@ -1,24 +1,19 @@
 package cohort46.gracebakeryapi.bakery.filter.service;
 
-import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
 import cohort46.gracebakeryapi.bakery.filter.controller.FilterController;
 import cohort46.gracebakeryapi.bakery.filter.dao.FilterRepository;
 import cohort46.gracebakeryapi.bakery.filter.dto.FilterDto;
 import cohort46.gracebakeryapi.bakery.filter.model.Filter;
-import cohort46.gracebakeryapi.bakery.image.service.ImageService;
+import cohort46.gracebakeryapi.other.exception.FailedDependencyException;
+import cohort46.gracebakeryapi.other.exception.FilterNotFoundException;
+import cohort46.gracebakeryapi.other.exception.ProductNotFoundException;
+import cohort46.gracebakeryapi.other.image.service.ImageService;
 import cohort46.gracebakeryapi.bakery.product.dao.ProductRepository;
-import cohort46.gracebakeryapi.bakery.product.dto.ProductDto;
 import cohort46.gracebakeryapi.bakery.product.model.Product;
-import cohort46.gracebakeryapi.bakery.product.service.ProductService;
-import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
-import cohort46.gracebakeryapi.exception.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor

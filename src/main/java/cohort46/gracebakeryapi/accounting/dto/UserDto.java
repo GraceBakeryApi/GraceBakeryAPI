@@ -1,9 +1,8 @@
 package cohort46.gracebakeryapi.accounting.dto;
 
-import cohort46.gracebakeryapi.bakery.address.dto.AddressDto;
-import cohort46.gracebakeryapi.bakery.address.model.Address;
+import cohort46.gracebakeryapi.order.address.dto.AddressDto;
 //import cohort46.gracebakeryapi.bakery.order.model.Order;
-import cohort46.gracebakeryapi.bakery.order.dto.OrderDto;
+import cohort46.gracebakeryapi.order.order.dto.OrderDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;

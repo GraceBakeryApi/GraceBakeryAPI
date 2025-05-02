@@ -1,13 +1,13 @@
 package cohort46.gracebakeryapi.bakery.optionsize.service;
 
-import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
+import cohort46.gracebakeryapi.other.exception.ResourceNotFoundException;
 import cohort46.gracebakeryapi.bakery.optionsize.controller.OptionsizeController;
 import cohort46.gracebakeryapi.bakery.optionsize.dao.OptionsizeRepository;
 import cohort46.gracebakeryapi.bakery.optionsize.dto.OptionsizeDto;
 import cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.bakery.size.model.Size;
-import cohort46.gracebakeryapi.exception.SizeNotFoundException;
+import cohort46.gracebakeryapi.other.exception.SizeNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;

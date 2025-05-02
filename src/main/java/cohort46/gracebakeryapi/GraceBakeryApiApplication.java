@@ -1,12 +1,10 @@
 package cohort46.gracebakeryapi;
 
-import cohort46.gracebakeryapi.helperclasses.GlobalVariables;
+import cohort46.gracebakeryapi.other.helperclasses.GlobalVariables;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;

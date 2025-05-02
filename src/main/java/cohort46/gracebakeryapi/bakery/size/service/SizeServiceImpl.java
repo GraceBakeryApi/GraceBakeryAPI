@@ -1,13 +1,12 @@
 package cohort46.gracebakeryapi.bakery.size.service;
 
-import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
-import cohort46.gracebakeryapi.bakery.category.model.Category;
 import cohort46.gracebakeryapi.bakery.size.controller.SizeController;
 import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
-import cohort46.gracebakeryapi.exception.*;
 import cohort46.gracebakeryapi.bakery.size.model.Size;
+import cohort46.gracebakeryapi.other.exception.FailedDependencyException;
+import cohort46.gracebakeryapi.other.exception.SizeNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;

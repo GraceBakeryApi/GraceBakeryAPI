@@ -3,7 +3,7 @@ package cohort46.gracebakeryapi.accounting.security;
 
 import cohort46.gracebakeryapi.accounting.dao.UserRepository;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
-import cohort46.gracebakeryapi.exception.UserNotFoundException;
+import cohort46.gracebakeryapi.other.exception.UserNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

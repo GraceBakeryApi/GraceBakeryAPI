@@ -1,14 +1,12 @@
 package cohort46.gracebakeryapi.bakery.ingredient.service;
 
-import cohort46.gracebakeryapi.bakery.image.service.ImageService;
+import cohort46.gracebakeryapi.other.exception.FailedDependencyException;
+import cohort46.gracebakeryapi.other.exception.IngredientNotFoundException;
+import cohort46.gracebakeryapi.other.image.service.ImageService;
 import cohort46.gracebakeryapi.bakery.ingredient.controller.IngredientController;
 import cohort46.gracebakeryapi.bakery.ingredient.dao.IngredientRepository;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.ingredient.dto.IngredientDto;
-import cohort46.gracebakeryapi.bakery.section.dto.SectionDto;
-import cohort46.gracebakeryapi.bakery.size.dto.SizeDto;
-import cohort46.gracebakeryapi.bakery.size.model.Size;
-import cohort46.gracebakeryapi.exception.*;
 import cohort46.gracebakeryapi.bakery.ingredient.model.Ingredient;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;

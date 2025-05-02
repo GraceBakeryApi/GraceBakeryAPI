@@ -8,12 +8,9 @@ import cohort46.gracebakeryapi.accounting.dto.UserDto;
 import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
 import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.accounting.service.UserService;
-import cohort46.gracebakeryapi.exception.UserNotFoundException;
-import jakarta.annotation.security.PermitAll;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

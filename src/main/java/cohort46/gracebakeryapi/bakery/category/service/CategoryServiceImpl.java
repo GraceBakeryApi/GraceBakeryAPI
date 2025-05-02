@@ -1,18 +1,15 @@
 package cohort46.gracebakeryapi.bakery.category.service;
 
-import cohort46.gracebakeryapi.bakery.bakeryoptional.dto.BakeryoptionalDto;
 import cohort46.gracebakeryapi.bakery.category.controller.CategoryController;
 import cohort46.gracebakeryapi.bakery.category.dao.CategoryRepository;
-import cohort46.gracebakeryapi.bakery.image.service.ImageService;
+import cohort46.gracebakeryapi.other.image.service.ImageService;
 import cohort46.gracebakeryapi.bakery.section.dao.SectionRepository;
 import cohort46.gracebakeryapi.bakery.category.dto.CategoryDto;
-import cohort46.gracebakeryapi.exception.CategoryNotFoundException;
-import cohort46.gracebakeryapi.exception.FailedDependencyException;
-import cohort46.gracebakeryapi.exception.ResourceNotFoundException;
+import cohort46.gracebakeryapi.other.exception.CategoryNotFoundException;
+import cohort46.gracebakeryapi.other.exception.FailedDependencyException;
 import cohort46.gracebakeryapi.bakery.category.model.Category;
 import cohort46.gracebakeryapi.bakery.section.model.Section;
-import cohort46.gracebakeryapi.exception.SectionNotFoundException;
-import cohort46.gracebakeryapi.helperclasses.SizePrice;
+import cohort46.gracebakeryapi.other.exception.SectionNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;

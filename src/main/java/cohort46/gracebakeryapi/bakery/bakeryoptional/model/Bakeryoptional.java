@@ -1,7 +1,7 @@
 package cohort46.gracebakeryapi.bakery.bakeryoptional.model;
 
 import cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize;
-import cohort46.gracebakeryapi.bakery.orderitem.model.Orderitem;
+import cohort46.gracebakeryapi.order.orderitem.model.Orderitem;
 import cohort46.gracebakeryapi.bakery.product.model.Product;
 import jakarta.persistence.*;
 import lombok.*;
