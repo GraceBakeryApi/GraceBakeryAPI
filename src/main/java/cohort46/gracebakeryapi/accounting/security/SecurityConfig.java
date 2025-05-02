@@ -63,7 +63,8 @@ public class SecurityConfig {
                                 "/users",
                                 "/user/*",
                                 "/user/*/*",
-                                "/products/isactive/true"
+                                "/products/isactive/true",
+                                "/products/closeddate"
                         ).hasAnyRole("ADMIN", "ROOT")
 
 
