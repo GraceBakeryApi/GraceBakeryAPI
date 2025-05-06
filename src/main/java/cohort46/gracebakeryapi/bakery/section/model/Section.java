@@ -3,6 +3,7 @@ package cohort46.gracebakeryapi.bakery.section.model;
 import cohort46.gracebakeryapi.bakery.category.model.Category;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.io.Serializable;
 import java.util.HashSet;
@@ -14,6 +15,8 @@ import java.util.Set;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Section implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

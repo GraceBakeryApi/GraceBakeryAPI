@@ -1,4 +1,4 @@
-package cohort46.gracebakeryapi.other.helperclasses;
+package cohort46.gracebakeryapi.order.orderstatus;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

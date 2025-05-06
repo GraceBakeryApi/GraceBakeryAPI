@@ -17,7 +17,7 @@ import cohort46.gracebakeryapi.other.exception.ForbiddenException;
 import cohort46.gracebakeryapi.other.exception.OrderNotFoundException;
 import cohort46.gracebakeryapi.other.exception.UserNotFoundException;
 import cohort46.gracebakeryapi.other.helperclasses.GlobalVariables;
-import cohort46.gracebakeryapi.other.helperclasses.OrdersStatusEnum;
+import cohort46.gracebakeryapi.order.orderstatus.OrdersStatusEnum;
 import lombok.RequiredArgsConstructor;
 //import org.mindrot.jbcrypt.BCrypt;
 import org.modelmapper.ModelMapper;

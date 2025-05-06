@@ -1,5 +1,7 @@
 package cohort46.gracebakeryapi.other.helperclasses;
 
+import cohort46.gracebakeryapi.order.orderstatus.OrderStatus;
+import cohort46.gracebakeryapi.order.orderstatus.OrdersStatusEnum;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 

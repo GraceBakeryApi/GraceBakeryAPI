@@ -4,6 +4,8 @@ import cohort46.gracebakeryapi.order.orderitem.model.Orderitem;
 import cohort46.gracebakeryapi.bakery.product.model.Product;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,6 +16,8 @@ import java.util.Set;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

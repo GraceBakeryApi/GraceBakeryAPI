@@ -3,6 +3,8 @@ package cohort46.gracebakeryapi.bakery.filter.model;
 import cohort46.gracebakeryapi.bakery.product.model.Product;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -13,6 +15,8 @@ import java.util.Set;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Filter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -20,7 +20,7 @@ import cohort46.gracebakeryapi.bakery.size.dao.SizeRepository;
 import cohort46.gracebakeryapi.other.exception.FailedDependencyException;
 import cohort46.gracebakeryapi.other.exception.NotAcceptableException;
 import cohort46.gracebakeryapi.other.exception.OrderitemNotFoundException;
-import cohort46.gracebakeryapi.other.helperclasses.OrdersStatusEnum;
+import cohort46.gracebakeryapi.order.orderstatus.OrdersStatusEnum;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;

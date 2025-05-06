@@ -4,7 +4,7 @@ import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.order.address.model.Address;
 import cohort46.gracebakeryapi.order.orderitem.model.Orderitem;
 //import cohort46.gracebakeryapi.helperclasses.OrderStatus;
-import cohort46.gracebakeryapi.other.helperclasses.OrderStatus;
+import cohort46.gracebakeryapi.order.orderstatus.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

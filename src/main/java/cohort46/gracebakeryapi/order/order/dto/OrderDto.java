@@ -2,7 +2,7 @@ package cohort46.gracebakeryapi.order.order.dto;
 
 import cohort46.gracebakeryapi.order.address.dto.AddressDto;
 import cohort46.gracebakeryapi.order.orderitem.dto.OrderitemDto;
-import cohort46.gracebakeryapi.other.helperclasses.OrderStatusDto;
+import cohort46.gracebakeryapi.order.orderstatus.OrderStatusDto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;

@@ -5,6 +5,7 @@ import cohort46.gracebakeryapi.bakery.product.model.Product;
 import cohort46.gracebakeryapi.bakery.size.model.Size;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -12,6 +13,8 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
+@Cacheable
+@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Productsize {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -9,10 +9,74 @@
         </resources>
     </cache>
 
-    <cache alias="com.example.yourentity">
+    <cache alias="cohort46.gracebakeryapi.accounting.model.UserAccount">
+        <resources>
+            <heap unit="entries">1000</heap>
+            <offheap unit="MB">100</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.product.model.Product">
         <resources>
             <heap unit="entries">500</heap>
             <offheap unit="MB">50</offheap>
         </resources>
     </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.size.model.Size">
+        <resources>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.section.model.Section">
+        <resources>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.productsize.model.Productsize">
+        <resources>
+            <heap unit="entries">200</heap>
+            <offheap unit="MB">50</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.optionsize.model.Optionsize">
+        <resources>
+            <heap unit="entries">200</heap>
+            <offheap unit="MB">50</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.ingredient.model.Ingredient">
+        <resources>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.filter.model.Filter">
+        <resources>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.category.model.Category">
+        <resources>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
+    <cache alias="cohort46.gracebakeryapi.bakery.bakeryoptional.model.Bakeryoptional">
+        <resources>
+            <heap unit="entries">50</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
 </config>

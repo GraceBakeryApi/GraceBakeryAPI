@@ -1,10 +1,7 @@
-package cohort46.gracebakeryapi.other.helperclasses;
+package cohort46.gracebakeryapi.order.orderstatus;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 
