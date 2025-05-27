@@ -1,4 +1,4 @@
-package cohort46.gracebakeryapi.accounting.security;
+package cohort46.gracebakeryapi.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;

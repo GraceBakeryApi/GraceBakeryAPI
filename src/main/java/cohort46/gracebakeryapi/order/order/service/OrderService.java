@@ -2,7 +2,7 @@ package cohort46.gracebakeryapi.order.order.service;
 
 
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
-import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.order.order.dto.OrderDto;
 import cohort46.gracebakeryapi.order.order.model.Order;
 

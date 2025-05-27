@@ -6,7 +6,7 @@ import cohort46.gracebakeryapi.accounting.dao.UserRepository;
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
 import cohort46.gracebakeryapi.accounting.model.RoleEnum;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
-import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.accounting.service.UserService;
 import cohort46.gracebakeryapi.order.address.dao.AddressRepository;
 import cohort46.gracebakeryapi.bakery.bakeryoptional.dao.BakeryoptionalRepository;

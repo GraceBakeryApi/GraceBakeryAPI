@@ -1,4 +1,4 @@
-package cohort46.gracebakeryapi.accounting.security;
+package cohort46.gracebakeryapi.security;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package cohort46.gracebakeryapi.accounting.security.JWT;
+package cohort46.gracebakeryapi.security.JWT;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
