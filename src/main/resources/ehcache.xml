@@ -79,4 +79,13 @@
         </resources>
     </cache>
 
+    <cache alias="cohort46.gracebakeryapi.other.image.model.Image">
+        <resources>
+            <heap unit="entries">500</heap>
+            <offheap unit="MB">50</offheap>
+        </resources>
+    </cache>
+
+
+
 </config>
