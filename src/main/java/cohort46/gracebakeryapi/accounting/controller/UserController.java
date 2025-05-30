@@ -31,7 +31,7 @@ public class UserController {
     @PostMapping("/user/reg")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto addUser(@RequestBody UserDto userDto) {
-        return userService.addUser(userDto)  ;
+        return userService.addUser(userDto)  ;//
     }
 
     @PostMapping("/user/login")
