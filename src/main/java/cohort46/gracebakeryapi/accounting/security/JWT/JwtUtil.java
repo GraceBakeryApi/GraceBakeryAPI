@@ -1,9 +1,9 @@
-package cohort46.gracebakeryapi.security.JWT;
+package cohort46.gracebakeryapi.accounting.security.JWT;
 
 
 import cohort46.gracebakeryapi.accounting.model.RoleEnum;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;
-import cohort46.gracebakeryapi.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import org.springframework.stereotype.Component;
 
 import io.jsonwebtoken.security.Keys;

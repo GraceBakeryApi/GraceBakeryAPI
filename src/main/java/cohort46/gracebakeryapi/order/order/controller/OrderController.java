@@ -1,6 +1,6 @@
 package cohort46.gracebakeryapi.order.order.controller;
 
-import cohort46.gracebakeryapi.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.order.order.dto.OrderDto;
 import cohort46.gracebakeryapi.order.order.service.OrderService;
 import lombok.RequiredArgsConstructor;

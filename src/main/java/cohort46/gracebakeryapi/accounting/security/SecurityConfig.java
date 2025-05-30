@@ -1,6 +1,6 @@
-package cohort46.gracebakeryapi.security;
+package cohort46.gracebakeryapi.accounting.security;
 
-import cohort46.gracebakeryapi.security.JWT.JwtRequestFilter;
+import cohort46.gracebakeryapi.accounting.security.JWT.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;

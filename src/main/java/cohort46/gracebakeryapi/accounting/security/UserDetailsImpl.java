@@ -1,4 +1,4 @@
-package cohort46.gracebakeryapi.security;
+package cohort46.gracebakeryapi.accounting.security;
 
 import cohort46.gracebakeryapi.accounting.model.RoleEnum;
 import cohort46.gracebakeryapi.accounting.model.UserAccount;

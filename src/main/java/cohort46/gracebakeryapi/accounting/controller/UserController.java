@@ -5,8 +5,8 @@ import cohort46.gracebakeryapi.accounting.dto.AuthorizationDto;
 import cohort46.gracebakeryapi.accounting.dto.ChangePasswordDto;
 import cohort46.gracebakeryapi.accounting.dto.UserDto;
 //import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
-import cohort46.gracebakeryapi.security.JWT.JwtUtil;
-import cohort46.gracebakeryapi.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.accounting.security.JWT.JwtUtil;
+import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.accounting.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -44,7 +44,7 @@ public class UserController {
     @PostMapping("/user/guest")
     @ResponseStatus(HttpStatus.CREATED)
     public UserDto addGuest() {
-        return null;//userService.addGuest()  ;
+        return userService.addGuest()  ;
     }
 
     ////////////////user//////////////////

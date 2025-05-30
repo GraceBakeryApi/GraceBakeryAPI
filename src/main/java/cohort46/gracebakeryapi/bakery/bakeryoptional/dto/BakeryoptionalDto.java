@@ -3,10 +3,7 @@ package cohort46.gracebakeryapi.bakery.bakeryoptional.dto;
 import cohort46.gracebakeryapi.other.helperclasses.SizePrice;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
+import lombok.*;
 import org.antlr.v4.runtime.misc.NotNull;
 
 import java.util.HashSet;
@@ -15,6 +12,8 @@ import java.util.Set;
 @Getter
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
+@AllArgsConstructor(access = AccessLevel.PUBLIC)
+@NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class BakeryoptionalDto {
     @NotNull
     @Setter

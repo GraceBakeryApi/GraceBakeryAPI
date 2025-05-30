@@ -1,6 +1,6 @@
-package cohort46.gracebakeryapi.security.JWT;
+package cohort46.gracebakeryapi.accounting.security.JWT;
 
-import cohort46.gracebakeryapi.security.UserDetailsImpl;
+import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import io.jsonwebtoken.MalformedJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
