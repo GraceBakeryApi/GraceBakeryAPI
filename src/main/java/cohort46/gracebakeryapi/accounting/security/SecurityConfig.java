@@ -1,6 +1,11 @@
 package cohort46.gracebakeryapi.accounting.security;
 
+import cohort46.gracebakeryapi.accounting.dao.UserRepository;
+import cohort46.gracebakeryapi.accounting.model.RoleEnum;
+import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import cohort46.gracebakeryapi.accounting.security.JWT.JwtRequestFilter;
+import cohort46.gracebakeryapi.accounting.security.OAuth2.CustomOAuth2UserService;
+import cohort46.gracebakeryapi.other.exception.OAuth2EmailNotFoundException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,26 +17,39 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserRequest;
+import org.springframework.security.oauth2.client.oidc.userinfo.OidcUserService;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.oidc.user.OidcUser;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.SecurityFilterChain;
 
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
+import java.util.Random;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
-
     private final JwtRequestFilter jwtRequestFilter;
+    private final AuthenticationSuccessHandler oauth2SuccessHandler;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
-    public SecurityConfig(JwtRequestFilter jwtRequestFilter) {
+    public SecurityConfig(JwtRequestFilter jwtRequestFilter, AuthenticationSuccessHandler oauth2SuccessHandler, UserRepository userRepository, CustomOAuth2UserService customOAuth2UserService) {
         this.jwtRequestFilter = jwtRequestFilter;
+        this.oauth2SuccessHandler = oauth2SuccessHandler;
+        this.customOAuth2UserService = customOAuth2UserService;
     }
 
     @Bean
@@ -41,10 +59,18 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(AbstractHttpConfigurer::disable)
+                .oauth2Login(oauth2 -> oauth2
+                        .redirectionEndpoint(endpoint -> endpoint.baseUri("/api/user/oauth"))
+                        .successHandler(oauth2SuccessHandler)
+                        .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService))
+                )
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests.requestMatchers(
                         "/api/user/login",
-                        "/api/user/reg"
+                                "/api/user/reg",
+                                "/api/user/oauth",
+                                "/oauth2/**"
                                 ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/products/isactive/true",
@@ -79,7 +105,6 @@ public class SecurityConfig {
 
                 .build();
     }
-
 
     @Bean
     public AuthenticationEntryPoint authenticationEntryPoint() {
