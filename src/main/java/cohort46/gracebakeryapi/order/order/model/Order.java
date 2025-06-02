@@ -30,7 +30,7 @@ public class Order {
     @ManyToOne
     private UserAccount user;
 
-    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Orderitem> orderitems = new HashSet<>();
 
     private Double total;

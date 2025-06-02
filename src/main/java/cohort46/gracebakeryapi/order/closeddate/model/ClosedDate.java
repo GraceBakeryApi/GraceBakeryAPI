@@ -1,9 +1,13 @@
 package cohort46.gracebakeryapi.order.closeddate.model;
 
-import cohort46.gracebakeryapi.accounting.model.UserAccount;
 import jakarta.persistence.*;
 import lombok.*;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

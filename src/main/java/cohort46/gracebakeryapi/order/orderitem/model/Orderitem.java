@@ -31,6 +31,7 @@ public class Orderitem {
     @ManyToOne
     private Product product;
 
+    @Builder.Default
     @ManyToMany
     private Set<Bakeryoptional> bakeryoptionals = new HashSet<>();
 

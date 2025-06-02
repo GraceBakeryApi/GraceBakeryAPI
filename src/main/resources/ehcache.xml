@@ -86,6 +86,13 @@
         </resources>
     </cache>
 
+    <cache alias="cohort46.gracebakeryapi.order.closeddate.model․ClosedDate">
+        <resources>
+            <heap unit="entries">100</heap>
+            <offheap unit="MB">10</offheap>
+        </resources>
+    </cache>
+
 
 
 </config>

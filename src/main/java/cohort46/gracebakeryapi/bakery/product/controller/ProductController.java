@@ -1,11 +1,15 @@
 package cohort46.gracebakeryapi.bakery.product.controller;
 
+import cohort46.gracebakeryapi.accounting.model.RoleEnum;
+import cohort46.gracebakeryapi.accounting.security.UserDetailsImpl;
 import cohort46.gracebakeryapi.bakery.product.dto.ProductDto;
 import cohort46.gracebakeryapi.bakery.product.dto.findProductsByPriceDto;
 import cohort46.gracebakeryapi.bakery.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +28,20 @@ public class ProductController {
 
     @GetMapping("/product/{id}")
     public ProductDto findProductById(@PathVariable Long id) {
-        return productService.findProductById(id);
+        ProductDto temp = productService.findProductById(id);
+        if (!temp.getIsActive()) {
+            Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+            if (principal instanceof UserDetailsImpl userDetails) {
+                RoleEnum role = userDetails.getUser().getRole();
+                if (role != RoleEnum.ADMIN && role != RoleEnum.ROOT) {
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+                }
+            } else {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Product not found");
+            }
+        }
+        return temp;
     }
 
     @PutMapping("/product/{id}")
@@ -48,7 +65,7 @@ public class ProductController {
         return productService.findProductsByCategory(category_id);
     }
 
-    @GetMapping("/products/category/{category_id}")
+    @GetMapping("/products/category/{category_id}")//IsActive = true
     public Iterable<ProductDto> findProductsByCategoryWithoutNoActive(@PathVariable Long category_id) {
         Set<ProductDto> productDtos = new HashSet<>();
         for(ProductDto temp : productService.findProductsByCategoryIdAndIsActive(category_id, true) )
@@ -64,7 +81,7 @@ public class ProductController {
         return productService.findProductsByCategoryIdAndIsActive(category_id, isActive);
     }
 
-    @GetMapping("/products/filters")
+    @GetMapping("/products/filters")//IsActive = true
     public Iterable<ProductDto> findProductsByFilters(@RequestBody Iterable<Long> filtersId) {
         return productService.findProductsByFilters(filtersId);
     }
@@ -74,7 +91,7 @@ public class ProductController {
         return productService.getProductsAll();
     }
 
-    @GetMapping("/products/price/{min}/{max}")
+    @GetMapping("/products/price/{min}/{max}")//IsActive = true
     public Iterable<findProductsByPriceDto> findProductsByPrice(@PathVariable Double min, @PathVariable Double max) {
         return productService.findProductsByPrice(min, max);
     }

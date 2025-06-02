@@ -10,14 +10,16 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.hibernate.annotations.Cache;
+
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

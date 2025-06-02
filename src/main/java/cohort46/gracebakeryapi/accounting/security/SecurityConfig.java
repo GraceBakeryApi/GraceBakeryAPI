@@ -73,8 +73,8 @@ public class SecurityConfig {
                                 "/oauth2/**"
                                 ).permitAll()
                         .requestMatchers(HttpMethod.GET,
-                                "/products/isactive/true",
-                                "/products/*",
+                                "/api/products/isactive/true",
+                                "/api/product/*",
                                 "/api/products/category/*/isactive/true",
                                 "/api/products/price/*/*",
                                 "/api/products/filters",
@@ -86,11 +86,11 @@ public class SecurityConfig {
                                 ).permitAll()
 
                         .requestMatchers(
-                                "/users",
-                                "/user/*",
-                                "/user/*/*",
-                                "/products/isactive/true",
-                                "/products/closeddate"
+                                "/api/users",
+                                "/api//user/*",
+                                "/api//user/*/*",
+                                "/api//products/isactive/true",
+                                "/api//products/closeddate"
                         ).hasAnyRole("ADMIN", "ROOT")
 
 

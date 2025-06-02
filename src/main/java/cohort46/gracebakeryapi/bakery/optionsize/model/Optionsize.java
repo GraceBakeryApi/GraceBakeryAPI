@@ -6,6 +6,10 @@ import cohort46.gracebakeryapi.bakery.size.model.Size;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Cache;
+
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -13,8 +17,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Setter
 @EqualsAndHashCode(of = "id")
 @Entity
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 public class Optionsize {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

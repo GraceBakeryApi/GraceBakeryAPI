@@ -39,9 +39,11 @@ public class UserAccount {
 
     private long birthdate;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Address> addresses = new HashSet<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER,  cascade = CascadeType.ALL)
     private Set<Order> orders = new HashSet<>();
 

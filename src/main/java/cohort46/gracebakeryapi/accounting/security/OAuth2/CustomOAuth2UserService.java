@@ -64,9 +64,9 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 cart.setId(null);
                 cart.setUser(user);
                 cart.setOrderstatus(GlobalVariables.getStatusList().get(OrdersStatusEnum.Cart.ordinal()));
-                //orderRepository.saveAndFlush(cart);
-                user.setCartId(orderRepository.saveAndFlush(cart).getId());
+                orderRepository.saveAndFlush(cart);
                 user.getOrders().add(cart);
+                user.setCartId(orderRepository.saveAndFlush(cart).getId());
                 user = userRepository.saveAndFlush(user);
             }
         }
