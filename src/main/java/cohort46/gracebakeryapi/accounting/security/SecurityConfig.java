@@ -70,7 +70,15 @@ public class SecurityConfig {
                         "/api/user/login",
                                 "/api/user/reg",
                                 "/api/user/oauth",
-                                "/oauth2/**"
+                                "/oauth2/**",
+
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/api/v3/api-docs/**",
+                                "/webjars/**",
+                                "/swagger-resources/**"
+
                                 ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/api/products/isactive/true",
@@ -87,10 +95,10 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/users",
-                                "/api//user/*",
-                                "/api//user/*/*",
-                                "/api//products/isactive/true",
-                                "/api//products/closeddate"
+                                "/api/user/*",
+                                "/api/user/*/*",
+                                "/api/products/isactive/true",
+                                "/api/products/closeddate"
                         ).hasAnyRole("ADMIN", "ROOT")
 
 
